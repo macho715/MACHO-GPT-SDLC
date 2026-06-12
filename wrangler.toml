@@ -1,0 +1,26 @@
+name = "mcp-dev-hub"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ── D1 Database (상태 원장 SSOT) ─────────────────────────────
+[[d1_databases]]
+binding = "DB"
+database_name = "mcp-dev-hub-db"
+database_id   = "3ea32e26-7d4c-47a8-9ec2-a768189b630b"
+
+# ── 환경 변수 (API_KEY는 Secret으로 관리) ────────────────────
+[vars]
+ENVIRONMENT = "production"
+
+# wrangler secret put API_KEY 로 등록할 것
+# API_KEY = "NEVER_PUT_SECRET_HERE"
+
+# ── 개발 환경 ─────────────────────────────────────────────────
+[env.dev]
+name = "mcp-dev-hub-dev"
+
+[[env.dev.d1_databases]]
+binding = "DB"
+database_name = "mcp-dev-hub-db-dev"
+database_id   = "REPLACE_WITH_YOUR_DEV_D1_ID"

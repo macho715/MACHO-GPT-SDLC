@@ -1,0 +1,19 @@
+{
+  "name": "mcp-dev-hub",
+  "version": "2.0.0",
+  "description": "Multi-AI discussion & collaboration MCP server — no GitHub/Linear required",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create mcp-dev-hub-db",
+    "db:init:local": "wrangler d1 execute mcp-dev-hub-db --local --file=src/db/schema.sql",
+    "db:init:prod": "wrangler d1 execute mcp-dev-hub-db --file=src/db/schema.sql",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240208.0",
+    "typescript": "^5.0.0",
+    "wrangler": "^3.0.0"
+  }
+}
