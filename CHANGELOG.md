@@ -13,10 +13,16 @@
 - **Collapsible 카드 패널**: 각 패널 헤더(button) 클릭/Enter/Space로 본문 접기·펴기. `grid-template-rows 1fr↔0fr` 트랜지션, chevron 회전, `aria-expanded`/`aria-controls` 접근성, 접힘 상태 `localStorage` 영속화 (commit `926bf33`)
 - 로딩 skeleton·빈 상태 아이콘·서버 연결 끊김 자동 재시도 배너 (`prefers-reduced-motion` 준수)
 - 데스크톱 런처 스크립트 `start-dashboard.cmd` / `stop-dashboard.cmd` / `make-shortcuts.ps1`
+- **에이전트 heartbeat 가이드** (`docs/agent-heartbeat.md`): codex 등 AI가 `update_state`로 대시보드에 `online` 보고하는 MCP 등록·호출법 + 기존 seed 행 정리 SQL (commit `52518ee`)
+- presence 한글 라벨(`온라인`/`지연`/`오프라인`/`미연결`) (`src/dashboard/page.ts`, commit `52518ee`)
 
 ### Changed
 
 - **대시보드 데이터 API를 공개 읽기 전용으로 전환**: `GET /api/dashboard`·`/api/mcp-status`·`/api/projects`는 인증 없이 조회 가능(키 입력 프롬프트 제거). 쓰기(POST·MCP 도구)는 `x-api-key` 인증 유지 (commit `ddf365d`)
+
+### Fixed
+
+- **미연결 에이전트가 `offline`(빨강)으로 오인되던 문제**: seed 행을 `updated_at=NULL`로 등록해 한 번도 heartbeat가 없는 에이전트는 `unknown`(회색·미연결)으로 표시, `offline`(연결됐다 끊김)과 구분. 첫 `update_state` 호출 시 `online`으로 전환 (`src/db/schema.sql`, `src/dashboard/data.ts`, commit `52518ee`). 배포 `391f073d` + 프로덕션 D1 seed 행(codex·minimax) `updated_at=NULL` 일회성 마이그레이션 적용
 
 ### Removed
 

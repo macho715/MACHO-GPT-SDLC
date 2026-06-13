@@ -60,6 +60,8 @@ graph TD
 | Event      | `event_log`                                                | 브로드캐스트 이벤트 로그                                             |
 | File       | `file_changes`                                             | 파일 변경 기록                                                       |
 
+> **Presence(heartbeat) 모델** (2026-06-13): 대시보드 AI 상태는 `ai_state.updated_at` 경과시간으로 산출(`src/dashboard/data.ts`의 `derivePresence`) — ≤120s `online`, ≤600s `stale`(지연), 그 외 `offline`(오프라인). `updated_at`이 NULL이면 `unknown`(미연결) = seed 후 한 번도 `update_state`를 호출하지 않은 에이전트로, "연결됐다 끊김"(offline)과 구분된다. 에이전트가 `online`을 유지하려면 120초 내 `update_state`로 heartbeat를 보내야 한다(연동: [docs/agent-heartbeat.md](docs/agent-heartbeat.md)).
+
 ## 5. 세션 라이프사이클 상태 기계
 
 ```mermaid

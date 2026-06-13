@@ -24,6 +24,7 @@ Current verified runtime:
 - Retrospective review and leader election.
 - Handoff, event, and file-change logging.
 - Public read-only dashboard shell plus dashboard, status, and per-project session snapshot APIs (writes stay key-gated). Updated 2026-06-13.
+- Agent presence/heartbeat: agents report status via `update_state`; the dashboard shows `online`/`stale`/`offline`/`unknown` (never-connected). See [docs/agent-heartbeat.md](docs/agent-heartbeat.md). Added 2026-06-13.
 - Tool schema contract metadata: `schema_version` and `contract_hash` on every tool.
 - Secret leak scan for docs, source, and tests.
 

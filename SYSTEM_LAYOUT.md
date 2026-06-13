@@ -35,10 +35,11 @@ mcp-dev-hub/
 │  └─ dashboard/              # 상태 대시보드 렌더
 │     ├─ data.ts              # 대시보드 데이터 집계 (buildDashboardData / buildMcpStatus)
 │     ├─ projects.ts          # 프로젝트(로컬 폴더)별 세션 그룹 집계 (buildProjectSessions, 2026-06-13)
-│     └─ page.ts              # 대시보드 HTML 셸 렌더 (공개 읽기, collapsible 패널)
+│     └─ page.ts              # 대시보드 HTML 셸 렌더 (공개 읽기, collapsible 패널, presence 한글 라벨)
 ├─ tests/
 │  └─ helpers/d1Mock.ts       # D1 테스트 더블 (handler 기반)
 ├─ docs/
+│  ├─ agent-heartbeat.md      # 에이전트 heartbeat/연동 가이드 (update_state로 online 보고, 2026-06-13)
 │  └─ traceability/
 │     └─ tool-inventory-v3.md # v3 도구 인벤토리
 ├─ .mcp.json                  # 프로젝트 스코프 dev-hub MCP 연결 (시크릿은 env var 참조)
