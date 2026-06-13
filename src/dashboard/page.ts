@@ -63,11 +63,27 @@ export function renderDashboardPage(): string {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 16px; min-width: 0;
   }
-  .panel h2 {
-    font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
-    color: var(--fg-dim); margin: 0 0 12px; display: flex; align-items: center; gap: 8px;
+  .panel h2 { margin: 0 0 12px; font-size: 13px; }
+  .panel.collapsed h2 { margin-bottom: 0; }
+  /* collapsible card header — a full-width button keeps native keyboard + a11y */
+  .panel-toggle {
+    width: 100%; display: flex; align-items: center; gap: 8px;
+    background: none; border: 0; margin: 0; padding: 0; min-height: 32px;
+    font: inherit; font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--fg-dim); cursor: pointer;
   }
-  .panel h2 .count { margin-left: auto; font-family: var(--mono); color: var(--fg); }
+  .panel-toggle:hover { color: var(--fg); }
+  .panel-toggle:focus-visible { outline: 2px solid var(--info); outline-offset: 3px; border-radius: 6px; }
+  .panel-toggle .count { margin-left: auto; font-family: var(--mono); color: var(--fg); }
+  .panel-toggle .chev {
+    width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5;
+    flex: none; transition: transform 200ms ease;
+  }
+  .panel.collapsed .panel-toggle .chev { transform: rotate(-90deg); }
+  /* grid 1fr↔0fr collapse animates height with no reflow/JS measurement */
+  .panel-body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 220ms ease; }
+  .panel-body > .panel-inner { min-height: 0; overflow: hidden; }
+  .panel.collapsed .panel-body { grid-template-rows: 0fr; }
   svg.ic { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; flex: none; }
   .empty { color: var(--fg-dim); font-size: 13px; padding: 12px 8px; display: flex; align-items: center; gap: 8px; }
   .empty svg { width: 15px; height: 15px; opacity: .55; }
@@ -178,39 +194,53 @@ export function renderDashboardPage(): string {
 
     <div class="grid">
       <section class="panel" aria-labelledby="h-agents">
-        <h2 id="h-agents">AI 상태 <span id="agentsCount" class="count num">0</span></h2>
-        <div id="agents" class="agents"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
+        <h2><button class="panel-toggle" type="button" id="h-agents" aria-expanded="true" aria-controls="body-agents"><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>AI 상태<span id="agentsCount" class="count num">0</span></button></h2>
+        <div class="panel-body" id="body-agents"><div class="panel-inner">
+          <div id="agents" class="agents"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
+        </div></div>
       </section>
 
       <section class="panel" aria-labelledby="h-session">
-        <h2 id="h-session">세션 라이프사이클</h2>
-        <div id="sessionBox"><div class="empty">활성 세션 없음</div></div>
+        <h2><button class="panel-toggle" type="button" id="h-session" aria-expanded="true" aria-controls="body-session"><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>세션 라이프사이클</button></h2>
+        <div class="panel-body" id="body-session"><div class="panel-inner">
+          <div id="sessionBox"><div class="empty">활성 세션 없음</div></div>
+        </div></div>
       </section>
 
       <section class="panel" aria-labelledby="h-tasks">
-        <h2 id="h-tasks">활성 태스크 <span id="tasksCount" class="count num">0</span></h2>
-        <ul id="tasks" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
+        <h2><button class="panel-toggle" type="button" id="h-tasks" aria-expanded="true" aria-controls="body-tasks"><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>활성 태스크<span id="tasksCount" class="count num">0</span></button></h2>
+        <div class="panel-body" id="body-tasks"><div class="panel-inner">
+          <ul id="tasks" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
+        </div></div>
       </section>
 
       <section class="panel" aria-labelledby="h-disc">
-        <h2 id="h-disc">토론 · 투표 <span id="discCount" class="count num">0</span></h2>
-        <ul id="disc" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
+        <h2><button class="panel-toggle" type="button" id="h-disc" aria-expanded="true" aria-controls="body-disc"><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>토론 · 투표<span id="discCount" class="count num">0</span></button></h2>
+        <div class="panel-body" id="body-disc"><div class="panel-inner">
+          <ul id="disc" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
+        </div></div>
       </section>
 
       <section class="panel" aria-labelledby="h-handoff">
-        <h2 id="h-handoff">대기 핸드오프 <span id="handoffCount" class="count num">0</span></h2>
-        <ul id="handoffs" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
+        <h2><button class="panel-toggle" type="button" id="h-handoff" aria-expanded="true" aria-controls="body-handoff"><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>대기 핸드오프<span id="handoffCount" class="count num">0</span></button></h2>
+        <div class="panel-body" id="body-handoff"><div class="panel-inner">
+          <ul id="handoffs" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
+        </div></div>
       </section>
 
       <section class="panel" aria-labelledby="h-events">
-        <h2 id="h-events">이벤트 피드</h2>
-        <ul id="events" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
+        <h2><button class="panel-toggle" type="button" id="h-events" aria-expanded="true" aria-controls="body-events"><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>이벤트 피드</button></h2>
+        <div class="panel-body" id="body-events"><div class="panel-inner">
+          <ul id="events" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
+        </div></div>
       </section>
     </div>
 
     <section class="panel proj-section" aria-labelledby="h-proj">
-      <h2 id="h-proj">프로젝트별 세션 <span id="projectsCount" class="count num">0</span></h2>
-      <div id="projects" class="proj-list"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
+      <h2><button class="panel-toggle" type="button" id="h-proj" aria-expanded="true" aria-controls="body-proj"><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>프로젝트별 세션<span id="projectsCount" class="count num">0</span></button></h2>
+      <div class="panel-body" id="body-proj"><div class="panel-inner">
+        <div id="projects" class="proj-list"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
+      </div></div>
     </section>
 
     <footer>D1 SSOT · 5초 polling · 공개 읽기 전용 /api (변경은 인증 필요)</footer>
@@ -455,9 +485,45 @@ export function renderDashboardPage(): string {
     if (on) { timer = setInterval(load, 5000); }
   }
 
+  // ── collapsible panels (state persisted per panel in localStorage) ──
+  var COLLAPSE_KEY = 'mcp_collapsed_panels';
+  function loadCollapsed() {
+    try { return JSON.parse(localStorage.getItem(COLLAPSE_KEY) || '[]') || []; }
+    catch (e) { return []; }
+  }
+  function saveCollapsed(ids) {
+    try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify(ids)); } catch (e) {}
+  }
+  function initPanels() {
+    var collapsed = loadCollapsed();
+    var toggles = document.querySelectorAll('.panel-toggle');
+    for (var i = 0; i < toggles.length; i++) {
+      bindToggle(toggles[i], collapsed);
+    }
+  }
+  function bindToggle(btn, collapsed) {
+    var panel = btn.closest('.panel');
+    var id = btn.getAttribute('aria-controls');
+    if (panel && collapsed.indexOf(id) !== -1) {
+      panel.classList.add('collapsed');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+    btn.addEventListener('click', function () {
+      if (!panel) { return; }
+      var nowCollapsed = panel.classList.toggle('collapsed');
+      btn.setAttribute('aria-expanded', nowCollapsed ? 'false' : 'true');
+      var cur = loadCollapsed();
+      var idx = cur.indexOf(id);
+      if (nowCollapsed && idx === -1) { cur.push(id); }
+      else if (!nowCollapsed && idx !== -1) { cur.splice(idx, 1); }
+      saveCollapsed(cur);
+    });
+  }
+
   el('refreshBtn').addEventListener('click', load);
   el('autoBtn').addEventListener('click', function () { setAuto(!auto); });
 
+  initPanels();
   load();
   setAuto(true);
 })();
