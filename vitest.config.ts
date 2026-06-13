@@ -5,11 +5,9 @@ export default defineConfig({
   plugins: [
     cloudflareTest({
       main: './src/index.ts',
+      // Single source of truth: compatibilityDate/Flags are read from wrangler.toml
+      // via configPath. Do NOT redefine them here — duplication causes test/prod drift.
       wrangler: { configPath: './wrangler.toml' },
-      miniflare: {
-        compatibilityFlags: ['nodejs_compat'],
-        compatibilityDate: '2025-01-01',
-      },
     }),
   ],
   test: {
