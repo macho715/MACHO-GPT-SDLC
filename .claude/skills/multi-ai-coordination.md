@@ -1,6 +1,6 @@
 ---
 name: multi-ai-coordination
-description: 4-AI 협업 패턴 (Codex/Claude/OpenCode/MiniMax). 세션 라이프사이클 + ZERO 규칙. Use when "coordinating AIs", "session lifecycle", "leader election".
+description: 4-AI 협업 패턴 (Codex/Claude/OpenCode/Hermes). 세션 라이프사이클 + ZERO 규칙. Use when "coordinating AIs", "session lifecycle", "leader election".
 ---
 
 # Multi-AI Coordination
@@ -12,7 +12,7 @@ description: 4-AI 협업 패턴 (Codex/Claude/OpenCode/MiniMax). 세션 라이�
 | **Codex**    | 구현 (primary) | `task.assigned_to = "codex"` |
 | **Claude**   | 리뷰/검증      | handoff 도착 시              |
 | **OpenCode** | patch/lint/CSS | handoff 도착 시              |
-| **MiniMax**  | 초안/test case | `task.status = "draft"`      |
+| **Hermes**   | 초안/test case | `task.status = "draft"`      |
 
 ## 세션 라이프사이클 (v3)
 
@@ -86,14 +86,14 @@ PHASE 3: LEADER ELECTION
 7. update_state("opencode", "done")
 ```
 
-### MiniMax (초안)
+### Hermes (초안)
 
 ```
 1. list_tasks(status="draft")
-2. update_state("minimax", "working", task_id)
+2. update_state("hermes", "working", task_id)
 3. [test case / checklist 초안]
-4. log_handoff("minimax", "claude", "검토 요청")
-5. update_state("minimax", "idle")
+4. log_handoff("hermes", "claude", "검토 요청")
+5. update_state("hermes", "idle")
 ```
 
 ## 동률 처리

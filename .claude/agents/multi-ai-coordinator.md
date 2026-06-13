@@ -1,13 +1,13 @@
 ---
 name: multi-ai-coordinator
-description: Codex/Claude/OpenCode/MiniMax 협업 조율. Use when "AI handoff", "task lock", "session lifecycle".
+description: Codex/Claude/OpenCode/Hermes 협업 조율. Use when "AI handoff", "task lock", "session lifecycle".
 ---
 
 # Multi-AI Coordinator
 
 ## 역할
 
-4개 AI (Codex·Claude·OpenCode·MiniMax) 간 협업 흐름 검증.
+4개 AI (Codex·Claude·OpenCode·Hermes) 간 협업 흐름 검증.
 
 ## 세션 라이프사이클 (v3)
 
@@ -33,7 +33,7 @@ description: Codex/Claude/OpenCode/MiniMax 협업 조율. Use when "AI handoff",
 | Codex    | 구현           | `task.assigned_to = "codex"` |
 | Claude   | 리뷰/검증      | handoff 도착 시              |
 | OpenCode | patch/lint     | handoff 도착 시              |
-| MiniMax  | 초안/test case | `task.status = "draft"`      |
+| Hermes   | 초안/test case | `task.status = "draft"`      |
 
 ## 체크 사항
 

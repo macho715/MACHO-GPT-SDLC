@@ -22,7 +22,7 @@
 ### Changed
 
 - **대시보드 데이터 API를 공개 읽기 전용으로 전환**: `GET /api/dashboard`·`/api/mcp-status`·`/api/projects`는 인증 없이 조회 가능(키 입력 프롬프트 제거). 쓰기(POST·MCP 도구)는 `x-api-key` 인증 유지 (commit `ddf365d`)
-- **4번째 협업 AI를 `minimax` → `hermes`로 교체**: seed 행·도구 enum(`agent` 파라미터)·전방 참조 문서를 모두 `hermes`로 변경. `src/db/schema.sql` seed `updated_at=NULL`, 도구 계약 스냅샷 재생성. 과거 마이그레이션·이력 기록은 보존(historical). 프로덕션 D1은 `UPDATE ai_state SET agent='hermes' WHERE agent='minimax'`로 이관
+- **4번째 협업 AI를 `minimax` → `hermes`로 교체**: seed 행·도구 enum(`agent` 파라미터)·전방 참조 문서(루트 + `.claude/skills`·`.claude/agents` tracked 문서)를 모두 `hermes`로 변경. `src/db/schema.sql` seed `updated_at=NULL`, 도구 계약 스냅샷 재생성. 과거 마이그레이션·이력 기록과 날짜 붙은 plan/ultraplan 아카이브는 보존(historical). 프로덕션 D1은 `UPDATE ai_state SET agent='hermes' WHERE agent='minimax'`로 이관
 
 ### Fixed
 
