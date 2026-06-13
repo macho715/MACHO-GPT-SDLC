@@ -4,6 +4,7 @@ import { nextId } from '../lib/mcp';
 import { createD1Mock, parseToolResult } from '../../tests/helpers/d1Mock';
 
 const baselineToolNames = [
+  'validate_agent_start',
   'get_dashboard',
   'start_session',
   'get_session',
@@ -40,7 +41,14 @@ const baselineToolNames = [
 describe('tool registry', () => {
   it('preserves the v3 tool inventory', () => {
     expect(tools.map((tool) => tool.name)).toEqual(baselineToolNames);
-    expect(tools).toHaveLength(31);
+    expect(tools).toHaveLength(32);
+  });
+
+  it('exposes contract metadata on every registered tool', () => {
+    for (const tool of tools) {
+      expect(tool.schema_version).toBe('v3.1');
+      expect(tool.contract_hash).toMatch(/^fnv1a32:[0-9a-f]{8}$/);
+    }
   });
 
   it('returns a tool error for unknown tool names', async () => {

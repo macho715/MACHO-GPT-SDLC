@@ -1,45 +1,53 @@
 # MCP DEV HUB v3 Tool Inventory
 
-Source captured from `v3_tools.ts`.
+Source: active `src/tools/index.ts` registry.
 
-Baseline result: `v3_tools.ts` defines 31 tools. The plan mentioned 32 tools, but `get_file_history` exists only in the older root `tools_index.ts` and README text, not in `v3_tools.ts`.
+Contract metadata:
 
-| #   | Tool                  | Domain file     | Preserved in `src/tools` |
-| --- | --------------------- | --------------- | ------------------------ |
-| 1   | `get_dashboard`       | `dashboard.ts`  | yes                      |
-| 2   | `start_session`       | `session.ts`    | yes                      |
-| 3   | `get_session`         | `session.ts`    | yes                      |
-| 4   | `close_session`       | `session.ts`    | yes                      |
-| 5   | `submit_retro`        | `retro.ts`      | yes                      |
-| 6   | `get_retro`           | `retro.ts`      | yes                      |
-| 7   | `finalize_retro`      | `retro.ts`      | yes                      |
-| 8   | `start_election`      | `election.ts`   | yes                      |
-| 9   | `cast_election_vote`  | `election.ts`   | yes                      |
-| 10  | `get_election_result` | `election.ts`   | yes                      |
-| 11  | `get_state`           | `state.ts`      | yes                      |
-| 12  | `update_state`        | `state.ts`      | yes                      |
-| 13  | `create_task`         | `task.ts`       | yes                      |
-| 14  | `list_tasks`          | `task.ts`       | yes                      |
-| 15  | `update_task`         | `task.ts`       | yes                      |
-| 16  | `start_discussion`    | `discussion.ts` | yes                      |
-| 17  | `post_message`        | `discussion.ts` | yes                      |
-| 18  | `get_discussion`      | `discussion.ts` | yes                      |
-| 19  | `close_discussion`    | `discussion.ts` | yes                      |
-| 20  | `check_consensus`     | `discussion.ts` | yes                      |
-| 21  | `create_vote`         | `vote.ts`       | yes                      |
-| 22  | `cast_vote`           | `vote.ts`       | yes                      |
-| 23  | `get_vote_result`     | `vote.ts`       | yes                      |
-| 24  | `log_handoff`         | `handoff.ts`    | yes                      |
-| 25  | `get_handoff`         | `handoff.ts`    | yes                      |
-| 26  | `ack_handoff`         | `handoff.ts`    | yes                      |
-| 27  | `lock_task`           | `lock.ts`       | yes                      |
-| 28  | `unlock_task`         | `lock.ts`       | yes                      |
-| 29  | `record_file_change`  | `file.ts`       | yes                      |
-| 30  | `broadcast_event`     | `event.ts`      | yes                      |
-| 31  | `get_events`          | `event.ts`      | yes                      |
+- `schema_version`: `v3.1`
+- `contract_hash`: deterministic FNV-1a hash of each tool name, description, input schema, annotations, and schema version.
+- Snapshot test: `src/tools/tool-contract.test.ts`
 
-Verification command:
+Baseline result: active v3 defines 32 tools.
+
+| #   | Tool                   | Domain file     | schema_version | contract_hash      |
+| --- | ---------------------- | --------------- | -------------- | ------------------ |
+| 1   | `validate_agent_start` | `guard.ts`      | `v3.1`         | `fnv1a32:779e52cf` |
+| 2   | `get_dashboard`        | `dashboard.ts`  | `v3.1`         | `fnv1a32:581c5921` |
+| 3   | `start_session`        | `session.ts`    | `v3.1`         | `fnv1a32:8b295f97` |
+| 4   | `get_session`          | `session.ts`    | `v3.1`         | `fnv1a32:28acb7ec` |
+| 5   | `close_session`        | `session.ts`    | `v3.1`         | `fnv1a32:6b5fbd7b` |
+| 6   | `submit_retro`         | `retro.ts`      | `v3.1`         | `fnv1a32:257024fe` |
+| 7   | `get_retro`            | `retro.ts`      | `v3.1`         | `fnv1a32:10e269a5` |
+| 8   | `finalize_retro`       | `retro.ts`      | `v3.1`         | `fnv1a32:675501e7` |
+| 9   | `start_election`       | `election.ts`   | `v3.1`         | `fnv1a32:6460c81b` |
+| 10  | `cast_election_vote`   | `election.ts`   | `v3.1`         | `fnv1a32:4decb8e0` |
+| 11  | `get_election_result`  | `election.ts`   | `v3.1`         | `fnv1a32:041882f2` |
+| 12  | `get_state`            | `state.ts`      | `v3.1`         | `fnv1a32:aee53fc0` |
+| 13  | `update_state`         | `state.ts`      | `v3.1`         | `fnv1a32:5eb490e3` |
+| 14  | `create_task`          | `task.ts`       | `v3.1`         | `fnv1a32:64ab5f94` |
+| 15  | `list_tasks`           | `task.ts`       | `v3.1`         | `fnv1a32:733a9727` |
+| 16  | `update_task`          | `task.ts`       | `v3.1`         | `fnv1a32:8b051058` |
+| 17  | `start_discussion`     | `discussion.ts` | `v3.1`         | `fnv1a32:7ab5d99a` |
+| 18  | `post_message`         | `discussion.ts` | `v3.1`         | `fnv1a32:06a97405` |
+| 19  | `get_discussion`       | `discussion.ts` | `v3.1`         | `fnv1a32:99d08b8e` |
+| 20  | `close_discussion`     | `discussion.ts` | `v3.1`         | `fnv1a32:ba088010` |
+| 21  | `check_consensus`      | `discussion.ts` | `v3.1`         | `fnv1a32:e2ad70e6` |
+| 22  | `create_vote`          | `vote.ts`       | `v3.1`         | `fnv1a32:cf3a5dd0` |
+| 23  | `cast_vote`            | `vote.ts`       | `v3.1`         | `fnv1a32:87822c9d` |
+| 24  | `get_vote_result`      | `vote.ts`       | `v3.1`         | `fnv1a32:bc9dca05` |
+| 25  | `log_handoff`          | `handoff.ts`    | `v3.1`         | `fnv1a32:0ef37aa1` |
+| 26  | `get_handoff`          | `handoff.ts`    | `v3.1`         | `fnv1a32:3441d0a9` |
+| 27  | `ack_handoff`          | `handoff.ts`    | `v3.1`         | `fnv1a32:71a2682d` |
+| 28  | `lock_task`            | `lock.ts`       | `v3.1`         | `fnv1a32:4ad2ab0c` |
+| 29  | `unlock_task`          | `lock.ts`       | `v3.1`         | `fnv1a32:6e27472c` |
+| 30  | `record_file_change`   | `file.ts`       | `v3.1`         | `fnv1a32:18d8c0b5` |
+| 31  | `broadcast_event`      | `event.ts`      | `v3.1`         | `fnv1a32:2616bf5e` |
+| 32  | `get_events`           | `event.ts`      | `v3.1`         | `fnv1a32:3f29f915` |
+
+Verification commands:
 
 ```bash
-rg "name:\s*'([^']+)'" v3_tools.ts src/tools
+npm test -- src/tools/tool-contract.test.ts
+npm run security:secrets
 ```

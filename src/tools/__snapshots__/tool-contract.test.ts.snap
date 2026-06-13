@@ -1,0 +1,1090 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`tool contract snapshot > matches the registered tool schemas and contract hashes 1`] = `
+[
+  {
+    "contract_hash": "fnv1a32:779e52cf",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "task_id": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "agent",
+        "task_id",
+      ],
+      "type": "object",
+    },
+    "name": "validate_agent_start",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:581c5921",
+    "inputSchema": {
+      "properties": {},
+      "type": "object",
+    },
+    "name": "get_dashboard",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:8b295f97",
+    "inputSchema": {
+      "properties": {
+        "goals": {
+          "description": "세션 목표 목록",
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "leader": {
+          "description": "세션 리더 AI",
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "title": {
+          "description": "세션 이름 (예: Sprint-04 인증 모듈)",
+          "type": "string",
+        },
+      },
+      "required": [
+        "title",
+        "leader",
+      ],
+      "type": "object",
+    },
+    "name": "start_session",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:28acb7ec",
+    "inputSchema": {
+      "properties": {
+        "session_id": {
+          "description": "조회할 세션 ID. 생략 시 활성 세션 반환.",
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "get_session",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:6b5fbd7b",
+    "inputSchema": {
+      "properties": {
+        "closed_by": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+            "human",
+          ],
+          "type": "string",
+        },
+        "session_id": {
+          "type": "string",
+        },
+        "summary": {
+          "description": "세션 완료 요약",
+          "type": "string",
+        },
+      },
+      "required": [
+        "session_id",
+        "closed_by",
+      ],
+      "type": "object",
+    },
+    "name": "close_session",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:257024fe",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "highlight": {
+          "description": "이 세션의 핵심 성과 한 줄 요약",
+          "type": "string",
+        },
+        "mvp_vote": {
+          "description": "이 세션에서 가장 기여한 AI (자기 자신 제외 권장)",
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "session_id": {
+          "type": "string",
+        },
+        "suggestions": {
+          "description": "다음 세션을 위한 제안",
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "went_well": {
+          "description": "잘된 점 목록 (최소 1개)",
+          "items": {
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+        "went_wrong": {
+          "description": "못된 점 / 개선 필요 사항 목록",
+          "items": {
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+      },
+      "required": [
+        "session_id",
+        "agent",
+        "went_well",
+        "went_wrong",
+      ],
+      "type": "object",
+    },
+    "name": "submit_retro",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:10e269a5",
+    "inputSchema": {
+      "properties": {
+        "session_id": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "session_id",
+      ],
+      "type": "object",
+    },
+    "name": "get_retro",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:675501e7",
+    "inputSchema": {
+      "properties": {
+        "session_id": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "session_id",
+      ],
+      "type": "object",
+    },
+    "name": "finalize_retro",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:6460c81b",
+    "inputSchema": {
+      "properties": {
+        "nominees": {
+          "description": "후보 목록. 생략 시 전체 AI가 후보.",
+          "items": {
+            "enum": [
+              "codex",
+              "claude",
+              "opencode",
+              "minimax",
+            ],
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "session_id": {
+          "description": "종료된 세션 ID",
+          "type": "string",
+        },
+        "ttl_minutes": {
+          "default": 30,
+          "description": "투표 마감 시간",
+          "type": "number",
+        },
+      },
+      "required": [
+        "session_id",
+      ],
+      "type": "object",
+    },
+    "name": "start_election",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:4decb8e0",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "description": "투표하는 AI",
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "election_id": {
+          "description": "선거 ID",
+          "type": "number",
+        },
+        "nominee": {
+          "description": "지지하는 후보",
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "reason": {
+          "description": "지지 이유 (권장)",
+          "type": "string",
+        },
+      },
+      "required": [
+        "election_id",
+        "agent",
+        "nominee",
+      ],
+      "type": "object",
+    },
+    "name": "cast_election_vote",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:041882f2",
+    "inputSchema": {
+      "properties": {
+        "auto_start_next": {
+          "default": true,
+          "description": "전원 투표 시 다음 세션 자동 시작",
+          "type": "boolean",
+        },
+        "election_id": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "election_id",
+      ],
+      "type": "object",
+    },
+    "name": "get_election_result",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:aee53fc0",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+            "all",
+          ],
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "get_state",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:5eb490e3",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "current_file": {
+          "type": "string",
+        },
+        "note": {
+          "type": "string",
+        },
+        "progress": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number",
+        },
+        "session_id": {
+          "type": "string",
+        },
+        "status": {
+          "enum": [
+            "idle",
+            "working",
+            "blocked",
+            "review",
+            "discussing",
+            "retro",
+            "done",
+          ],
+          "type": "string",
+        },
+        "task_id": {
+          "type": "string",
+        },
+        "task_title": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "agent",
+        "status",
+      ],
+      "type": "object",
+    },
+    "name": "update_state",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:64ab5f94",
+    "inputSchema": {
+      "properties": {
+        "assigned_to": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "created_by": {
+          "type": "string",
+        },
+        "description": {
+          "type": "string",
+        },
+        "priority": {
+          "default": "normal",
+          "enum": [
+            "low",
+            "normal",
+            "high",
+            "critical",
+          ],
+          "type": "string",
+        },
+        "session_id": {
+          "type": "string",
+        },
+        "title": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "title",
+      ],
+      "type": "object",
+    },
+    "name": "create_task",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:733a9727",
+    "inputSchema": {
+      "properties": {
+        "assigned_to": {
+          "default": "all",
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+            "all",
+          ],
+          "type": "string",
+        },
+        "limit": {
+          "default": 20,
+          "type": "number",
+        },
+        "session_id": {
+          "type": "string",
+        },
+        "status": {
+          "default": "all",
+          "enum": [
+            "open",
+            "in_progress",
+            "review",
+            "done",
+            "blocked",
+            "all",
+          ],
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "list_tasks",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:8b051058",
+    "inputSchema": {
+      "properties": {
+        "assigned_to": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "priority": {
+          "enum": [
+            "low",
+            "normal",
+            "high",
+            "critical",
+          ],
+          "type": "string",
+        },
+        "status": {
+          "enum": [
+            "open",
+            "in_progress",
+            "review",
+            "done",
+            "blocked",
+          ],
+          "type": "string",
+        },
+        "task_id": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "task_id",
+      ],
+      "type": "object",
+    },
+    "name": "update_task",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:7ab5d99a",
+    "inputSchema": {
+      "properties": {
+        "initiated_by": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "invite_agents": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "opening_message": {
+          "type": "string",
+        },
+        "session_id": {
+          "type": "string",
+        },
+        "task_id": {
+          "type": "string",
+        },
+        "title": {
+          "type": "string",
+        },
+        "topic": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "task_id",
+        "title",
+        "initiated_by",
+        "opening_message",
+      ],
+      "type": "object",
+    },
+    "name": "start_discussion",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:06a97405",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number",
+        },
+        "content": {
+          "type": "string",
+        },
+        "evidence": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "reply_to": {
+          "type": "number",
+        },
+        "role": {
+          "enum": [
+            "propose",
+            "agree",
+            "disagree",
+            "question",
+            "clarify",
+            "summarize",
+            "decide",
+          ],
+          "type": "string",
+        },
+        "thread_id": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "thread_id",
+        "agent",
+        "role",
+        "content",
+      ],
+      "type": "object",
+    },
+    "name": "post_message",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:99d08b8e",
+    "inputSchema": {
+      "properties": {
+        "limit": {
+          "default": 50,
+          "type": "number",
+        },
+        "thread_id": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "thread_id",
+      ],
+      "type": "object",
+    },
+    "name": "get_discussion",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:ba088010",
+    "inputSchema": {
+      "properties": {
+        "action_items": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "consensus_summary": {
+          "type": "string",
+        },
+        "outcome": {
+          "default": "consensus",
+          "enum": [
+            "consensus",
+            "no_consensus",
+            "deferred",
+          ],
+          "type": "string",
+        },
+        "thread_id": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "thread_id",
+        "agent",
+        "consensus_summary",
+      ],
+      "type": "object",
+    },
+    "name": "close_discussion",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:e2ad70e6",
+    "inputSchema": {
+      "properties": {
+        "thread_id": {
+          "type": "string",
+        },
+        "threshold": {
+          "default": 0.75,
+          "type": "number",
+        },
+      },
+      "required": [
+        "thread_id",
+      ],
+      "type": "object",
+    },
+    "name": "check_consensus",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:cf3a5dd0",
+    "inputSchema": {
+      "properties": {
+        "created_by": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "options": {
+          "items": {
+            "type": "string",
+          },
+          "minItems": 2,
+          "type": "array",
+        },
+        "question": {
+          "type": "string",
+        },
+        "thread_id": {
+          "type": "string",
+        },
+        "ttl_minutes": {
+          "default": 60,
+          "type": "number",
+        },
+      },
+      "required": [
+        "thread_id",
+        "question",
+        "options",
+        "created_by",
+      ],
+      "type": "object",
+    },
+    "name": "create_vote",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:87822c9d",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "choice": {
+          "type": "string",
+        },
+        "reason": {
+          "type": "string",
+        },
+        "vote_id": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "vote_id",
+        "agent",
+        "choice",
+      ],
+      "type": "object",
+    },
+    "name": "cast_vote",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:bc9dca05",
+    "inputSchema": {
+      "properties": {
+        "close_if_all": {
+          "default": true,
+          "type": "boolean",
+        },
+        "vote_id": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "vote_id",
+      ],
+      "type": "object",
+    },
+    "name": "get_vote_result",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:0ef37aa1",
+    "inputSchema": {
+      "properties": {
+        "changed_files": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "from_agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "instructions": {
+          "type": "string",
+        },
+        "risks": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "summary": {
+          "type": "string",
+        },
+        "task_id": {
+          "type": "string",
+        },
+        "to_agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "from_agent",
+        "to_agent",
+        "task_id",
+        "summary",
+      ],
+      "type": "object",
+    },
+    "name": "log_handoff",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:3441d0a9",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "status": {
+          "default": "pending",
+          "enum": [
+            "pending",
+            "acknowledged",
+            "all",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "agent",
+      ],
+      "type": "object",
+    },
+    "name": "get_handoff",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:71a2682d",
+    "inputSchema": {
+      "properties": {
+        "accepted": {
+          "default": true,
+          "type": "boolean",
+        },
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "handoff_id": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "handoff_id",
+        "agent",
+      ],
+      "type": "object",
+    },
+    "name": "ack_handoff",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:4ad2ab0c",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "task_id": {
+          "type": "string",
+        },
+        "ttl_minutes": {
+          "default": 30,
+          "type": "number",
+        },
+      },
+      "required": [
+        "task_id",
+        "agent",
+      ],
+      "type": "object",
+    },
+    "name": "lock_task",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:6e27472c",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "task_id": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "task_id",
+        "agent",
+      ],
+      "type": "object",
+    },
+    "name": "unlock_task",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:18d8c0b5",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+        "change_type": {
+          "enum": [
+            "create",
+            "modify",
+            "delete",
+          ],
+          "type": "string",
+        },
+        "diff_snippet": {
+          "type": "string",
+        },
+        "file_path": {
+          "type": "string",
+        },
+        "summary": {
+          "type": "string",
+        },
+        "task_id": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "agent",
+        "file_path",
+        "change_type",
+        "summary",
+      ],
+      "type": "object",
+    },
+    "name": "record_file_change",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:2616bf5e",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "type": "string",
+        },
+        "event_type": {
+          "enum": [
+            "alert",
+            "info",
+            "warning",
+            "state_change",
+            "task_update",
+            "discussion",
+            "session",
+          ],
+          "type": "string",
+        },
+        "message": {
+          "type": "string",
+        },
+        "payload": {
+          "type": "object",
+        },
+        "session_id": {
+          "type": "string",
+        },
+        "task_id": {
+          "type": "string",
+        },
+        "thread_id": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "event_type",
+        "agent",
+        "message",
+      ],
+      "type": "object",
+    },
+    "name": "broadcast_event",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:3f29f915",
+    "inputSchema": {
+      "properties": {
+        "agent": {
+          "default": "all",
+          "type": "string",
+        },
+        "event_type": {
+          "default": "all",
+          "type": "string",
+        },
+        "limit": {
+          "default": 30,
+          "type": "number",
+        },
+        "session_id": {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "get_events",
+    "schema_version": "v3.1",
+  },
+]
+`;
