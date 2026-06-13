@@ -134,12 +134,18 @@ export function renderDashboardPage(defaultKey = ''): string {
   .proj-head { display: flex; align-items: center; gap: 8px; }
   .proj-head svg { width: 16px; height: 16px; stroke: var(--fg-dim); }
   .proj-name { font-family: var(--mono); font-weight: 600; font-size: 14px; }
-  .proj-meta { margin-left: auto; font-size: 11px; font-family: var(--mono); color: var(--fg-dim); white-space: nowrap; }
+  .proj-meta { margin-left: auto; font-size: 11px; font-family: var(--mono); color: var(--fg-dim); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .proj-path { font-size: 11px; color: var(--fg-dim); font-family: var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 4px 0 10px 24px; }
   .proj-sessions { display: grid; gap: 6px; }
   .sess { display: flex; align-items: center; gap: 8px; padding: 7px 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+  .sdot { width: 8px; height: 8px; border-radius: 50%; background: var(--fg-dim); flex: none; }
+  .sdot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 2s ease-in-out infinite; }
+  .sdot.retro, .sdot.voting, .sdot.closing { background: var(--warn); }
+  .sdot.closed { background: var(--fg-dim); opacity: .45; }
   .sess .sid { font-family: var(--mono); font-size: 11px; color: var(--fg-dim); flex: none; }
-  .sess .stitle { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sess .scol { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .sess .stitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sess .sgoal { font-size: 11px; color: var(--fg-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .st { font-family: var(--mono); font-size: 11px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--fg-dim); flex: none; }
   .st.active { color: var(--accent); border-color: var(--accent); }
   .st.retro, .st.voting, .st.closing { color: var(--warn); border-color: var(--warn); }
@@ -441,9 +447,14 @@ export function renderDashboardPage(defaultKey = ''): string {
       for (var j = 0; j < sess.length; j++) {
         var s = sess[j];
         var st = String(s.status || '');
+        var goal = s.goals && s.goals.length ? String(s.goals[0]) : '';
+        var goalLine = goal
+          ? '<span class="sgoal" title="' + esc(goal) + '">→ ' + esc(goal) + '</span>'
+          : '';
         rows += '<div class="sess">'
+          + '<span class="sdot ' + esc(st) + '" aria-hidden="true"></span>'
           + '<span class="sid">' + esc(s.id) + '</span>'
-          + '<span class="stitle">' + esc(s.title) + '</span>'
+          + '<div class="scol"><span class="stitle" title="' + esc(s.title) + '">' + esc(s.title) + '</span>' + goalLine + '</div>'
           + '<span class="tag">' + esc(s.leader) + '</span>'
           + '<span class="st ' + esc(st) + '">' + esc(st) + '</span>'
           + '</div>';
