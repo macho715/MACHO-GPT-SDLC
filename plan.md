@@ -41,8 +41,8 @@
 
 ### T3. 정리 후속 (선택) — P3
 
-- gitignored 산출물 `coverage/`(687K)·`out/`(5K) 로컬 정리 (재생성됨, 저장소 영향 없음).
-- `docs/archive/` 인덱스(README 한 줄) 추가 여부.
+- [x] `docs/archive/` 인덱스 `docs/archive/README.md` 추가 ✅ 2026-06-13
+- [ ] gitignored 산출물 `coverage/`·`out/` 로컬 정리 — **보류**(사용자가 삭제 거부, gitignored라 저장소 영향 없음).
 
 ## 4. 범위 제외 (Out of Scope)
 
