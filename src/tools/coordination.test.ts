@@ -111,7 +111,7 @@ describe('coordination tools', () => {
             { agent: 'codex', choice: 'A' },
             { agent: 'claude', choice: 'A' },
             { agent: 'opencode', choice: 'B' },
-            { agent: 'minimax', choice: 'A' },
+            { agent: 'hermes', choice: 'A' },
           ],
         };
       }

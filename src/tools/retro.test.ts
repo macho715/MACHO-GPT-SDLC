@@ -151,7 +151,7 @@ describe('retro tools', () => {
               mvp_vote: 'claude',
             },
             {
-              agent: 'minimax',
+              agent: 'hermes',
               went_well: '["tests"]',
               went_wrong: '[]',
               suggestions: '[]',
@@ -201,7 +201,7 @@ describe('retro tools', () => {
               mvp_vote: null,
             },
             {
-              agent: 'minimax',
+              agent: 'hermes',
               went_well: '[]',
               went_wrong: '[]',
               suggestions: '[]',
@@ -276,7 +276,7 @@ describe('retro tools', () => {
               mvp_vote: null,
             },
             {
-              agent: 'minimax',
+              agent: 'hermes',
               went_well: null,
               went_wrong: null,
               suggestions: null,

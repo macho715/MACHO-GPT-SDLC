@@ -15,10 +15,14 @@
 - 데스크톱 런처 스크립트 `start-dashboard.cmd` / `stop-dashboard.cmd` / `make-shortcuts.ps1`
 - **에이전트 heartbeat 가이드** (`docs/agent-heartbeat.md`): codex 등 AI가 `update_state`로 대시보드에 `online` 보고하는 MCP 등록·호출법 + 기존 seed 행 정리 SQL (commit `52518ee`)
 - presence 한글 라벨(`온라인`/`지연`/`오프라인`/`미연결`) (`src/dashboard/page.ts`, commit `52518ee`)
+- **dev hub 작업 이어받기 트리거** (`docs/dev-hub-pickup.md`): 채팅에 `dev hub`/`/dev-hub` 입력 시 `get_handoff`→`get_dashboard`→`list_tasks` 고정 시퀀스로 인계 작업을 이어받음. codex·opencode 공유 `AGENTS.md`, `CLAUDE.md`, `.claude/commands/dev-hub.md` 트리거 + codex 전역 `~/.codex/AGENTS.md`·`prompts/dev-hub.md` (commit `ee977ef`)
+- **세션 헤더 로컬 폴더 칩**: 활성 세션 헤더에 `session.project` 경로의 폴더명(basename)을 칩으로 표시 — 어느 폴더 세션인지 한눈에 식별. 미지정 시 안내 툴팁 달린 "폴더 미지정" 회색 칩 (`src/dashboard/page.ts`, commit `fc8b656`)
+- **대시보드 dev hub 사용법 패널 + 사용자 편의성**: 헤더 아래 접이식 사용법 패널(트리거·3단계·분기), 트리거 칩 클릭→클립보드 복사(복사됨 피드백), 헤더 "전체 접기/펼치기" 1버튼, 키보드 단축키(`r`=새로고침·`?`=도움말 토글) (`src/dashboard/page.ts`, commit `4e9cfd2`)
 
 ### Changed
 
 - **대시보드 데이터 API를 공개 읽기 전용으로 전환**: `GET /api/dashboard`·`/api/mcp-status`·`/api/projects`는 인증 없이 조회 가능(키 입력 프롬프트 제거). 쓰기(POST·MCP 도구)는 `x-api-key` 인증 유지 (commit `ddf365d`)
+- **4번째 협업 AI를 `minimax` → `hermes`로 교체**: seed 행·도구 enum(`agent` 파라미터)·전방 참조 문서를 모두 `hermes`로 변경. `src/db/schema.sql` seed `updated_at=NULL`, 도구 계약 스냅샷 재생성. 과거 마이그레이션·이력 기록은 보존(historical). 프로덕션 D1은 `UPDATE ai_state SET agent='hermes' WHERE agent='minimax'`로 이관
 
 ### Fixed
 

@@ -12,7 +12,7 @@ export const retroTools = [
       required: ['session_id', 'agent', 'went_well', 'went_wrong'],
       properties: {
         session_id: { type: 'string' },
-        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         went_well: {
           type: 'array',
           items: { type: 'string' },
@@ -33,7 +33,7 @@ export const retroTools = [
         highlight: { type: 'string', description: '이 세션의 핵심 성과 한 줄 요약' },
         mvp_vote: {
           type: 'string',
-          enum: ['codex', 'claude', 'opencode', 'minimax'],
+          enum: ['codex', 'claude', 'opencode', 'hermes'],
           description: '이 세션에서 가장 기여한 AI (자기 자신 제외 권장)',
         },
       },

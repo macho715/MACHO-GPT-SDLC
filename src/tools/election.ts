@@ -19,7 +19,7 @@ export const electionTools = [
         session_id: { type: 'string', description: '종료된 세션 ID' },
         nominees: {
           type: 'array',
-          items: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+          items: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
           description: '후보 목록. 생략 시 전체 AI가 후보.',
         },
         ttl_minutes: { type: 'number', default: 30, description: '투표 마감 시간' },
@@ -37,12 +37,12 @@ export const electionTools = [
         election_id: { type: 'number', description: '선거 ID' },
         agent: {
           type: 'string',
-          enum: ['codex', 'claude', 'opencode', 'minimax'],
+          enum: ['codex', 'claude', 'opencode', 'hermes'],
           description: '투표하는 AI',
         },
         nominee: {
           type: 'string',
-          enum: ['codex', 'claude', 'opencode', 'minimax'],
+          enum: ['codex', 'claude', 'opencode', 'hermes'],
           description: '지지하는 후보',
         },
         reason: { type: 'string', description: '지지 이유 (권장)' },
@@ -74,7 +74,7 @@ export async function startElection(
   db: D1Database
 ): Promise<ToolResult> {
   const { session_id } = args as Record<string, string>;
-  const nominees = (args.nominees as string[]) ?? ['codex', 'claude', 'opencode', 'minimax'];
+  const nominees = (args.nominees as string[]) ?? ['codex', 'claude', 'opencode', 'hermes'];
   const ttl = (args.ttl_minutes as number) ?? 30;
 
   const result = await db

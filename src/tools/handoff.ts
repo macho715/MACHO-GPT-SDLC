@@ -8,8 +8,8 @@ export const handoffTools = [
       type: 'object',
       required: ['from_agent', 'to_agent', 'task_id', 'summary'],
       properties: {
-        from_agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
-        to_agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        from_agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
+        to_agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         task_id: { type: 'string' },
         summary: { type: 'string' },
         changed_files: { type: 'array', items: { type: 'string' } },
@@ -26,7 +26,7 @@ export const handoffTools = [
       type: 'object',
       required: ['agent'],
       properties: {
-        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         status: { type: 'string', enum: ['pending', 'acknowledged', 'all'], default: 'pending' },
       },
     },
@@ -40,7 +40,7 @@ export const handoffTools = [
       required: ['handoff_id', 'agent'],
       properties: {
         handoff_id: { type: 'number' },
-        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         accepted: { type: 'boolean', default: true },
       },
     },

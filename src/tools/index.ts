@@ -72,6 +72,6 @@ export async function handleTool(
       task_id: args.task_id as string | undefined,
       op_type: isReadOnly ? 'read' : 'write',
     },
-    () => handler(args, db),
+    () => handler(args, db)
   );
 }

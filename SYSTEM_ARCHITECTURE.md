@@ -5,7 +5,7 @@
 
 ## 1. 개요
 
-mcp-dev-hub는 **여러 AI(Codex·Claude·OpenCode·MiniMax)가 하나의 상태 원장을 공유**하도록 하는 MCP 서버다. 단일 Cloudflare Worker가 MCP JSON-RPC 2.0 요청을 받아 Cloudflare D1(SQLite)에 모든 상태를 기록한다. **D1이 유일한 진실 원천(SSOT)** — 메모리·파일 캐시·글로벌 상태를 두지 않는다.
+mcp-dev-hub는 **여러 AI(Codex·Claude·OpenCode·Hermes)가 하나의 상태 원장을 공유**하도록 하는 MCP 서버다. 단일 Cloudflare Worker가 MCP JSON-RPC 2.0 요청을 받아 Cloudflare D1(SQLite)에 모든 상태를 기록한다. **D1이 유일한 진실 원천(SSOT)** — 메모리·파일 캐시·글로벌 상태를 두지 않는다.
 
 ## 2. 요청 처리 흐름
 
@@ -61,6 +61,8 @@ graph TD
 | File       | `file_changes`                                             | 파일 변경 기록                                                       |
 
 > **Presence(heartbeat) 모델** (2026-06-13): 대시보드 AI 상태는 `ai_state.updated_at` 경과시간으로 산출(`src/dashboard/data.ts`의 `derivePresence`) — ≤120s `online`, ≤600s `stale`(지연), 그 외 `offline`(오프라인). `updated_at`이 NULL이면 `unknown`(미연결) = seed 후 한 번도 `update_state`를 호출하지 않은 에이전트로, "연결됐다 끊김"(offline)과 구분된다. 에이전트가 `online`을 유지하려면 120초 내 `update_state`로 heartbeat를 보내야 한다(연동: [docs/agent-heartbeat.md](docs/agent-heartbeat.md)).
+
+> **dev hub 작업 이어받기 트리거** (2026-06-13): 사용자가 채팅에 `dev hub`(또는 `/dev-hub`)를 입력하면 각 에이전트가 `get_handoff`→`get_dashboard`→`list_tasks` 고정 시퀀스를 실행해, 자신에게 온 핸드오프/할당 태스크를 자동으로 이어받는다. 핸드오프가 없으면 임의 작업을 만들지 않는다(ZERO-T1). 트리거 정의는 codex·opencode 공유 `AGENTS.md`와 `CLAUDE.md`에, 표준 프로토콜은 [docs/dev-hub-pickup.md](docs/dev-hub-pickup.md)에 있다. 대시보드 `GET /dashboard`는 이 사용법을 접이식 패널로 표시하고, 트리거 칩 클릭 시 클립보드로 복사된다.
 
 ## 5. 세션 라이프사이클 상태 기계
 

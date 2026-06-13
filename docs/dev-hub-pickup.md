@@ -1,7 +1,7 @@
 # dev hub — 작업 이어받기 트리거 (Pickup Protocol)
 
 > 채팅창에 **`dev hub`** (또는 `devhub` · `데브허브` · `/dev-hub`)라고 입력하면,
-> 어느 에이전트(codex · claude · opencode · minimax)든 **이 고정 시퀀스**를 실행해
+> 어느 에이전트(codex · claude · opencode · hermes)든 **이 고정 시퀀스**를 실행해
 > 다른 에이전트가 넘긴 작업을 자동으로 이어받는다.
 >
 > 이 문서가 단일 기준(SSOT)이다. 각 에이전트의 지시 파일(`AGENTS.md` · `CLAUDE.md`)은
@@ -15,7 +15,7 @@
 
 ## 0. 나(ME) 식별
 
-각 에이전트는 자신의 고정 이름을 ME로 쓴다: `codex` | `claude` | `opencode` | `minimax`.
+각 에이전트는 자신의 고정 이름을 ME로 쓴다: `codex` | `claude` | `opencode` | `hermes`.
 (추측 금지 — 자신이 어느 런타임인지 모르면 사용자에게 1회 확인.)
 
 ## 1. 고정 시퀀스 (순서 고정)

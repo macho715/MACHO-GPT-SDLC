@@ -18,7 +18,7 @@ export const sessionTools = [
         title: { type: 'string', description: '세션 이름 (예: Sprint-04 인증 모듈)' },
         leader: {
           type: 'string',
-          enum: ['codex', 'claude', 'opencode', 'minimax'],
+          enum: ['codex', 'claude', 'opencode', 'hermes'],
           description: '세션 리더 AI',
         },
         goals: { type: 'array', items: { type: 'string' }, description: '세션 목표 목록' },
@@ -50,7 +50,7 @@ export const sessionTools = [
       required: ['session_id', 'closed_by'],
       properties: {
         session_id: { type: 'string' },
-        closed_by: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax', 'human'] },
+        closed_by: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes', 'human'] },
         summary: { type: 'string', description: '세션 완료 요약' },
       },
     },

@@ -35,7 +35,7 @@ mcp-dev-hub/
 │  └─ dashboard/              # 상태 대시보드 렌더
 │     ├─ data.ts              # 대시보드 데이터 집계 (buildDashboardData / buildMcpStatus)
 │     ├─ projects.ts          # 프로젝트(로컬 폴더)별 세션 그룹 집계 (buildProjectSessions, 2026-06-13)
-│     └─ page.ts              # 대시보드 HTML 셸 렌더 (공개 읽기, collapsible 패널, presence 한글 라벨)
+│     └─ page.ts              # 대시보드 HTML 셸 렌더 (공개 읽기, collapsible 패널, presence 한글 라벨, dev hub 사용법 패널·트리거 복사·전체접기·단축키, 세션 폴더 칩)
 ├─ tests/
 │  └─ helpers/d1Mock.ts       # D1 테스트 더블 (handler 기반)
 ├─ docs/

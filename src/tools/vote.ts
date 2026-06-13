@@ -11,7 +11,7 @@ export const voteTools = [
         thread_id: { type: 'string' },
         question: { type: 'string' },
         options: { type: 'array', items: { type: 'string' }, minItems: 2 },
-        created_by: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        created_by: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         ttl_minutes: { type: 'number', default: 60 },
       },
     },
@@ -25,7 +25,7 @@ export const voteTools = [
       required: ['vote_id', 'agent', 'choice'],
       properties: {
         vote_id: { type: 'number' },
-        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         choice: { type: 'string' },
         reason: { type: 'string' },
       },

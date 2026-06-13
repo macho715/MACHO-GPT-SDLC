@@ -242,4 +242,4 @@ CREATE TABLE IF NOT EXISTS agent_heartbeat (
 INSERT OR IGNORE INTO ai_state (agent, status, updated_at) VALUES ('codex',    'idle', NULL);
 INSERT OR IGNORE INTO ai_state (agent, status, updated_at) VALUES ('claude',   'idle', NULL);
 INSERT OR IGNORE INTO ai_state (agent, status, updated_at) VALUES ('opencode', 'idle', NULL);
-INSERT OR IGNORE INTO ai_state (agent, status, updated_at) VALUES ('minimax',  'idle', NULL);
+INSERT OR IGNORE INTO ai_state (agent, status, updated_at) VALUES ('hermes',  'idle', NULL);

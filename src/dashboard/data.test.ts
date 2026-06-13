@@ -48,7 +48,7 @@ describe('buildMcpStatus', () => {
           },
           {
             // seed 직후 heartbeat 없는 에이전트: updated_at NULL → 'unknown'(미연결)
-            agent: 'minimax',
+            agent: 'hermes',
             status: 'idle',
             task_title: null,
             progress: 0,
@@ -86,7 +86,7 @@ describe('buildMcpStatus', () => {
     expect(byAgent.codex).toBe('online');
     expect(byAgent.claude).toBe('offline');
     // heartbeat 없는 seed 행은 offline(빨강)이 아니라 unknown(미연결)이어야 한다
-    expect(byAgent.minimax).toBe('unknown');
+    expect(byAgent.hermes).toBe('unknown');
   });
 
   it('raises ZERO flags when blocked>=2 and a handoff is pending', async () => {

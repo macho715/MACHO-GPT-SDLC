@@ -15,7 +15,7 @@ export const taskTools = [
           enum: ['low', 'normal', 'high', 'critical'],
           default: 'normal',
         },
-        assigned_to: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        assigned_to: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         session_id: { type: 'string' },
         created_by: { type: 'string' },
       },
@@ -35,7 +35,7 @@ export const taskTools = [
         },
         assigned_to: {
           type: 'string',
-          enum: ['codex', 'claude', 'opencode', 'minimax', 'all'],
+          enum: ['codex', 'claude', 'opencode', 'hermes', 'all'],
           default: 'all',
         },
         session_id: { type: 'string' },
@@ -53,7 +53,7 @@ export const taskTools = [
       properties: {
         task_id: { type: 'string' },
         status: { type: 'string', enum: ['open', 'in_progress', 'review', 'done', 'blocked'] },
-        assigned_to: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        assigned_to: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         priority: { type: 'string', enum: ['low', 'normal', 'high', 'critical'] },
       },
     },

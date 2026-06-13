@@ -1,6 +1,6 @@
 import { ok, type ToolDefinition, type ToolHandler, type ToolResult } from '../lib/mcp';
 
-const agentEnum = ['codex', 'claude', 'opencode', 'minimax'] as const;
+const agentEnum = ['codex', 'claude', 'opencode', 'hermes'] as const;
 
 type GuardStatus = 'PASS' | 'ZERO-T1' | 'ZERO-T2' | 'ZERO-T3';
 

@@ -2,14 +2,14 @@
 
 > **프로젝트명**: `mcp-dev-hub` (Cloudflare Workers + D1 + TypeScript)
 > **현재 버전**: v3 (Session Lifecycle + Retro + Leader Election)
-> **지원 AI**: Codex · Codex · OpenCode Go · MiniMax
+> **지원 AI**: Codex · Codex · OpenCode Go · Hermes
 
 ## dev hub — 작업 이어받기 (트리거)
 
 사용자 메시지에 **`dev hub`** (또는 `devhub` · `dev-hub` · `데브허브` · `/dev-hub`)가 포함되면
 **즉시 아래 고정 시퀀스를 실행**한다. 추측하지 말고 그대로 따른다. (상세: `docs/dev-hub-pickup.md`)
 
-ME = 자신의 이름(`codex` | `claude` | `opencode` | `minimax`).
+ME = 자신의 이름(`codex` | `claude` | `opencode` | `hermes`).
 
 ```
 1) get_handoff  { agent: ME, status: "pending" }   # 나에게 온 인계 작업?

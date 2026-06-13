@@ -13,7 +13,7 @@ describe('election tools', () => {
     );
 
     expect(result.election_id).toBe(7);
-    expect(result.nominees).toEqual(['codex', 'claude', 'opencode', 'minimax']);
+    expect(result.nominees).toEqual(['codex', 'claude', 'opencode', 'hermes']);
   });
 
   it('prevents duplicate election votes', async () => {
@@ -84,7 +84,7 @@ describe('election tools', () => {
             { agent: 'codex', nominee: 'claude' },
             { agent: 'claude', nominee: 'claude' },
             { agent: 'opencode', nominee: 'claude' },
-            { agent: 'minimax', nominee: 'claude' },
+            { agent: 'hermes', nominee: 'claude' },
           ],
         };
       }
@@ -126,7 +126,7 @@ describe('election tools', () => {
             { agent: 'codex', nominee: 'codex' },
             { agent: 'claude', nominee: 'claude' },
             { agent: 'opencode', nominee: 'codex' },
-            { agent: 'minimax', nominee: 'claude' },
+            { agent: 'hermes', nominee: 'claude' },
           ],
         };
       }

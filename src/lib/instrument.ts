@@ -6,7 +6,7 @@ export async function instrument<T>(
     task_id?: string;
     op_type: 'read' | 'write';
   },
-  fn: () => Promise<T>,
+  fn: () => Promise<T>
 ): Promise<T> {
   const t0 = Date.now();
   let error_code: string | null = null;
@@ -22,9 +22,16 @@ export async function instrument<T>(
       await db
         .prepare(
           `INSERT INTO d1_op_log (tool_name, agent, task_id, op_type, latency_ms, error_code)
-           VALUES (?, ?, ?, ?, ?, ?)`,
+           VALUES (?, ?, ?, ?, ?, ?)`
         )
-        .bind(meta.tool_name, meta.agent ?? null, meta.task_id ?? null, meta.op_type, latency, error_code)
+        .bind(
+          meta.tool_name,
+          meta.agent ?? null,
+          meta.task_id ?? null,
+          meta.op_type,
+          latency,
+          error_code
+        )
         .run();
     } catch {
       // best-effort: logging failure must not surface to the caller

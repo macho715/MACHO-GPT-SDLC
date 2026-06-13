@@ -7,7 +7,7 @@ export const stateTools = [
     inputSchema: {
       type: 'object',
       properties: {
-        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax', 'all'] },
+        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes', 'all'] },
       },
     },
     annotations: { readOnlyHint: true },
@@ -19,7 +19,7 @@ export const stateTools = [
       type: 'object',
       required: ['agent', 'status'],
       properties: {
-        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         status: {
           type: 'string',
           enum: ['idle', 'working', 'blocked', 'review', 'discussing', 'retro', 'done'],

@@ -13,7 +13,7 @@
 | `offline` | 빨강              | > 600초 (연결됐다 끊김)                      |
 | `unknown` | 회색 = **미연결** | `updated_at`이 NULL (한 번도 heartbeat 없음) |
 
-seed 직후 codex/claude/opencode/minimax는 `updated_at = NULL`(미연결, 회색)이다.
+seed 직후 codex/claude/opencode/hermes는 `updated_at = NULL`(미연결, 회색)이다.
 첫 `update_state` 호출 시 `updated_at`이 채워지며 `online`으로 전환된다.
 
 ## 1) codex CLI에 dev-hub MCP 등록

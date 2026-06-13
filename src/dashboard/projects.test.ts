@@ -6,7 +6,9 @@ type Row = Record<string, unknown>;
 
 const sessionsMock = (rows: Array<Row>) =>
   createD1Mock((sql, _args, op) => {
-    if (op === 'all' && sql.includes('FROM session')) {return { results: rows };}
+    if (op === 'all' && sql.includes('FROM session')) {
+      return { results: rows };
+    }
     return { results: [] };
   });
 
@@ -23,9 +25,36 @@ describe('buildProjectSessions', () => {
 
   it('groups sessions by local folder and derives a basename', async () => {
     const db = sessionsMock([
-      { id: 'SESS-3', title: 'alpha live', leader: 'claude', status: 'active', project: '/home/user/alpha', goals: '[]', created_at: '2026-06-13T10:00:00Z', closed_at: null },
-      { id: 'SESS-1', title: 'alpha old', leader: 'codex', status: 'closed', project: '/home/user/alpha', goals: '[]', created_at: '2026-06-10T09:00:00Z', closed_at: '2026-06-11T09:00:00Z' },
-      { id: 'SESS-2', title: 'beta done', leader: 'minimax', status: 'closed', project: 'C:\\work\\beta', goals: '[]', created_at: '2026-06-12T09:00:00Z', closed_at: null },
+      {
+        id: 'SESS-3',
+        title: 'alpha live',
+        leader: 'claude',
+        status: 'active',
+        project: '/home/user/alpha',
+        goals: '[]',
+        created_at: '2026-06-13T10:00:00Z',
+        closed_at: null,
+      },
+      {
+        id: 'SESS-1',
+        title: 'alpha old',
+        leader: 'codex',
+        status: 'closed',
+        project: '/home/user/alpha',
+        goals: '[]',
+        created_at: '2026-06-10T09:00:00Z',
+        closed_at: '2026-06-11T09:00:00Z',
+      },
+      {
+        id: 'SESS-2',
+        title: 'beta done',
+        leader: 'hermes',
+        status: 'closed',
+        project: 'C:\\work\\beta',
+        goals: '[]',
+        created_at: '2026-06-12T09:00:00Z',
+        closed_at: null,
+      },
     ]);
     const view = await buildProjectSessions(db);
 
@@ -43,7 +72,16 @@ describe('buildProjectSessions', () => {
 
   it('buckets sessions with no project under the unassigned group', async () => {
     const db = sessionsMock([
-      { id: 'SESS-9', title: 'legacy', leader: 'claude', status: 'active', project: null, goals: '[]', created_at: '2026-06-11T09:00:00Z', closed_at: null },
+      {
+        id: 'SESS-9',
+        title: 'legacy',
+        leader: 'claude',
+        status: 'active',
+        project: null,
+        goals: '[]',
+        created_at: '2026-06-11T09:00:00Z',
+        closed_at: null,
+      },
     ]);
     const view = await buildProjectSessions(db);
 
@@ -54,9 +92,36 @@ describe('buildProjectSessions', () => {
 
   it('orders groups by live-session count, then sessions live-first then newest', async () => {
     const db = sessionsMock([
-      { id: 'SESS-A1', title: 'busy active', leader: 'claude', status: 'active', project: '/p/busy', goals: '[]', created_at: '2026-06-13T08:00:00Z', closed_at: null },
-      { id: 'SESS-A2', title: 'busy old', leader: 'codex', status: 'closed', project: '/p/busy', goals: '[]', created_at: '2026-06-09T08:00:00Z', closed_at: null },
-      { id: 'SESS-B1', title: 'quiet done', leader: 'minimax', status: 'closed', project: '/p/quiet', goals: '[]', created_at: '2026-06-13T23:00:00Z', closed_at: null },
+      {
+        id: 'SESS-A1',
+        title: 'busy active',
+        leader: 'claude',
+        status: 'active',
+        project: '/p/busy',
+        goals: '[]',
+        created_at: '2026-06-13T08:00:00Z',
+        closed_at: null,
+      },
+      {
+        id: 'SESS-A2',
+        title: 'busy old',
+        leader: 'codex',
+        status: 'closed',
+        project: '/p/busy',
+        goals: '[]',
+        created_at: '2026-06-09T08:00:00Z',
+        closed_at: null,
+      },
+      {
+        id: 'SESS-B1',
+        title: 'quiet done',
+        leader: 'hermes',
+        status: 'closed',
+        project: '/p/quiet',
+        goals: '[]',
+        created_at: '2026-06-13T23:00:00Z',
+        closed_at: null,
+      },
     ]);
     const view = await buildProjectSessions(db);
 
@@ -70,8 +135,26 @@ describe('buildProjectSessions', () => {
 
   it('parses goals JSON and tolerates malformed goals', async () => {
     const db = sessionsMock([
-      { id: 'SESS-G', title: 'with goals', leader: 'claude', status: 'active', project: '/p/g', goals: '["ship","test"]', created_at: '2026-06-13T08:00:00Z', closed_at: null },
-      { id: 'SESS-X', title: 'bad goals', leader: 'codex', status: 'active', project: '/p/g', goals: 'not-json', created_at: '2026-06-13T07:00:00Z', closed_at: null },
+      {
+        id: 'SESS-G',
+        title: 'with goals',
+        leader: 'claude',
+        status: 'active',
+        project: '/p/g',
+        goals: '["ship","test"]',
+        created_at: '2026-06-13T08:00:00Z',
+        closed_at: null,
+      },
+      {
+        id: 'SESS-X',
+        title: 'bad goals',
+        leader: 'codex',
+        status: 'active',
+        project: '/p/g',
+        goals: 'not-json',
+        created_at: '2026-06-13T07:00:00Z',
+        closed_at: null,
+      },
     ]);
     const view = await buildProjectSessions(db);
     const sessions = view.projects[0].sessions;

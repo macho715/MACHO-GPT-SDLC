@@ -8,7 +8,7 @@ export const fileTools = [
       type: 'object',
       required: ['agent', 'file_path', 'change_type', 'summary'],
       properties: {
-        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         task_id: { type: 'string' },
         file_path: { type: 'string' },
         change_type: { type: 'string', enum: ['create', 'modify', 'delete'] },

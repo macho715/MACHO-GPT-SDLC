@@ -9,7 +9,7 @@ export const lockTools = [
       required: ['task_id', 'agent'],
       properties: {
         task_id: { type: 'string' },
-        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         ttl_minutes: { type: 'number', default: 30 },
       },
     },
@@ -23,7 +23,7 @@ export const lockTools = [
       required: ['task_id', 'agent'],
       properties: {
         task_id: { type: 'string' },
-        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
       },
     },
     annotations: { readOnlyHint: false, idempotentHint: true },

@@ -2,7 +2,7 @@
 
 > **프로젝트명**: `mcp-dev-hub` (Cloudflare Workers + D1 + TypeScript)
 > **현재 버전**: v3 (Session Lifecycle + Retro + Leader Election)
-> **지원 AI**: Codex · Claude · OpenCode Go · MiniMax
+> **지원 AI**: Codex · Claude · OpenCode Go · Hermes
 
 ## dev hub — 작업 이어받기 (트리거)
 

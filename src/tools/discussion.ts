@@ -19,7 +19,7 @@ export const discussionTools = [
         session_id: { type: 'string' },
         title: { type: 'string' },
         topic: { type: 'string' },
-        initiated_by: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        initiated_by: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         opening_message: { type: 'string' },
         invite_agents: { type: 'array', items: { type: 'string' } },
       },
@@ -34,7 +34,7 @@ export const discussionTools = [
       required: ['thread_id', 'agent', 'role', 'content'],
       properties: {
         thread_id: { type: 'string' },
-        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         role: {
           type: 'string',
           enum: ['propose', 'agree', 'disagree', 'question', 'clarify', 'summarize', 'decide'],
@@ -68,7 +68,7 @@ export const discussionTools = [
       required: ['thread_id', 'agent', 'consensus_summary'],
       properties: {
         thread_id: { type: 'string' },
-        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'minimax'] },
+        agent: { type: 'string', enum: ['codex', 'claude', 'opencode', 'hermes'] },
         consensus_summary: { type: 'string' },
         action_items: { type: 'array', items: { type: 'string' } },
         outcome: {

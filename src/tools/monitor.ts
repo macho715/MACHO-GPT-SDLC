@@ -6,7 +6,7 @@ import {
   type ToolResult,
 } from '../lib/mcp';
 
-const agentEnum = ['codex', 'claude', 'opencode', 'minimax'] as const;
+const agentEnum = ['codex', 'claude', 'opencode', 'hermes'] as const;
 
 export const monitorTools = [
   {
@@ -69,7 +69,7 @@ export const monitorTools = [
 async function auditToolContracts(
   args: Record<string, unknown>,
   db: D1Database,
-  allTools: ContractedToolDefinition[],
+  allTools: ContractedToolDefinition[]
 ): Promise<ToolResult> {
   const schema_version = (args.schema_version as string) ?? 'unknown';
   const smells: Array<{ tool: string; issue: string; severity: 'high' | 'medium' | 'low' }> = [];
@@ -81,11 +81,14 @@ async function auditToolContracts(
     }
     const isWrite = tool.annotations?.readOnlyHint !== true;
     if (isWrite && !/실패|금지|주의|필수|먼저|반드시|에러|fail|error/i.test(desc)) {
-      smells.push({ tool: tool.name, issue: 'write tool인데 실패조건/제약 미명시', severity: 'medium' });
+      smells.push({
+        tool: tool.name,
+        issue: 'write tool인데 실패조건/제약 미명시',
+        severity: 'medium',
+      });
     }
     const schema = tool.inputSchema as { required?: string[]; properties?: object } | undefined;
-    const hasProps =
-      schema?.properties !== undefined && Object.keys(schema.properties).length > 0;
+    const hasProps = schema?.properties !== undefined && Object.keys(schema.properties).length > 0;
     if (hasProps && (!schema?.required || schema.required.length === 0)) {
       smells.push({ tool: tool.name, issue: 'properties 있으나 required 미지정', severity: 'low' });
     }
@@ -100,7 +103,7 @@ async function auditToolContracts(
   await db
     .prepare(
       `INSERT INTO tool_contract_audit (schema_version, contract_hash, total_tools, smell_count, smells)
-       VALUES (?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?)`
     )
     .bind(schema_version, contract_hash, allTools.length, smells.length, JSON.stringify(smells))
     .run();
@@ -130,7 +133,7 @@ async function getD1Health(args: Record<string, unknown>, db: D1Database): Promi
          SUM(CASE WHEN op_type='write' THEN 1 ELSE 0 END) AS write_ops,
          SUM(CASE WHEN op_type='read'  THEN 1 ELSE 0 END) AS read_ops
        FROM d1_op_log
-       WHERE created_at > datetime('now', '-' || ? || ' minutes')`,
+       WHERE created_at > datetime('now', '-' || ? || ' minutes')`
     )
     .bind(win)
     .first<Record<string, number>>();
@@ -139,7 +142,7 @@ async function getD1Health(args: Record<string, unknown>, db: D1Database): Promi
     .prepare(
       `SELECT tool_name, latency_ms, agent, created_at FROM d1_op_log
        WHERE created_at > datetime('now', '-' || ? || ' minutes')
-       ORDER BY latency_ms DESC LIMIT 5`,
+       ORDER BY latency_ms DESC LIMIT 5`
     )
     .bind(win)
     .all();
@@ -184,7 +187,7 @@ async function getD1Health(args: Record<string, unknown>, db: D1Database): Promi
 
 async function heartbeatHandler(
   args: Record<string, unknown>,
-  db: D1Database,
+  db: D1Database
 ): Promise<ToolResult> {
   const agent = args.agent as string;
   const active_task = (args.active_task as string | undefined) ?? null;
@@ -197,7 +200,7 @@ async function heartbeatHandler(
        ON CONFLICT(agent) DO UPDATE SET
          last_beat   = datetime('now'),
          active_task = excluded.active_task,
-         active_lock = excluded.active_lock`,
+         active_lock = excluded.active_lock`
     )
     .bind(agent, active_task, active_lock)
     .run();
@@ -207,16 +210,13 @@ async function heartbeatHandler(
 
 type HeartbeatRow = { agent: string; active_lock: string | null };
 
-async function reapStaleAgents(
-  args: Record<string, unknown>,
-  db: D1Database,
-): Promise<ToolResult> {
+async function reapStaleAgents(args: Record<string, unknown>, db: D1Database): Promise<ToolResult> {
   const staleMin = (args.stale_minutes as number) ?? 30;
 
   const stale = await db
     .prepare(
       `SELECT agent, active_lock FROM agent_heartbeat
-       WHERE last_beat < datetime('now', '-' || ? || ' minutes')`,
+       WHERE last_beat < datetime('now', '-' || ? || ' minutes')`
     )
     .bind(staleMin)
     .all<HeartbeatRow>();
@@ -241,7 +241,7 @@ async function reapStaleAgents(
           action: 'reaped',
           reason: `stale > ${staleMin}min`,
           released_lock: row.active_lock,
-        }),
+        })
       )
       .run();
     reaped.push(row.agent);
@@ -256,7 +256,7 @@ async function reapStaleAgents(
 }
 
 export function createMonitorHandlers(
-  allTools: ContractedToolDefinition[],
+  allTools: ContractedToolDefinition[]
 ): Record<string, ToolHandler> {
   return {
     audit_tool_contracts: (args, db) => auditToolContracts(args, db, allTools),

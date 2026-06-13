@@ -44,7 +44,9 @@ function basename(path: string): string {
 }
 
 function parseGoals(raw: unknown): Array<string> {
-  if (typeof raw !== 'string') {return [];}
+  if (typeof raw !== 'string') {
+    return [];
+  }
   try {
     const parsed = JSON.parse(raw) as unknown;
     return Array.isArray(parsed) ? parsed.filter((g): g is string => typeof g === 'string') : [];
@@ -89,8 +91,11 @@ export async function buildProjectSessions(db: D1Database): Promise<ProjectSessi
   for (const row of rows) {
     const key = row.project ?? UNASSIGNED;
     const list = buckets.get(key);
-    if (list) {list.push(row);}
-    else {buckets.set(key, [row]);}
+    if (list) {
+      list.push(row);
+    } else {
+      buckets.set(key, [row]);
+    }
   }
 
   const projects: Array<ProjectGroup> = [...buckets.entries()].map(([key, sessions]) => {
@@ -98,7 +103,9 @@ export async function buildProjectSessions(db: D1Database): Promise<ProjectSessi
     const sorted = [...sessions].sort((a, b) => {
       const aLive = LIVE_STATUSES.has(a.status) ? 0 : 1;
       const bLive = LIVE_STATUSES.has(b.status) ? 0 : 1;
-      if (aLive !== bLive) {return aLive - bLive;}
+      if (aLive !== bLive) {
+        return aLive - bLive;
+      }
       return b.created_at.localeCompare(a.created_at);
     });
     return {
@@ -111,7 +118,9 @@ export async function buildProjectSessions(db: D1Database): Promise<ProjectSessi
   });
 
   projects.sort((a, b) => {
-    if (a.active !== b.active) {return b.active - a.active;}
+    if (a.active !== b.active) {
+      return b.active - a.active;
+    }
     const aRecent = a.sessions[0]?.created_at ?? '';
     const bRecent = b.sessions[0]?.created_at ?? '';
     return bRecent.localeCompare(aRecent);

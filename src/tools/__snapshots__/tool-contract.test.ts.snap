@@ -3,7 +3,7 @@
 exports[`tool contract snapshot > matches the registered tool schemas and contract hashes 1`] = `
 [
   {
-    "contract_hash": "fnv1a32:779e52cf",
+    "contract_hash": "fnv1a32:f39297c0",
     "inputSchema": {
       "properties": {
         "agent": {
@@ -11,7 +11,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -38,7 +38,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:ac942fea",
+    "contract_hash": "fnv1a32:f194e8af",
     "inputSchema": {
       "properties": {
         "goals": {
@@ -54,7 +54,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -91,7 +91,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:6b5fbd7b",
+    "contract_hash": "fnv1a32:9878354c",
     "inputSchema": {
       "properties": {
         "closed_by": {
@@ -99,7 +99,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
             "human",
           ],
           "type": "string",
@@ -122,7 +122,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:257024fe",
+    "contract_hash": "fnv1a32:42a5a2e8",
     "inputSchema": {
       "properties": {
         "agent": {
@@ -130,7 +130,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -144,7 +144,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -219,7 +219,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:6460c81b",
+    "contract_hash": "fnv1a32:43e4c396",
     "inputSchema": {
       "properties": {
         "nominees": {
@@ -229,7 +229,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
               "codex",
               "claude",
               "opencode",
-              "minimax",
+              "hermes",
             ],
             "type": "string",
           },
@@ -254,7 +254,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:4decb8e0",
+    "contract_hash": "fnv1a32:27f60f5a",
     "inputSchema": {
       "properties": {
         "agent": {
@@ -263,7 +263,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -277,7 +277,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -318,7 +318,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:aee53fc0",
+    "contract_hash": "fnv1a32:f674f9cf",
     "inputSchema": {
       "properties": {
         "agent": {
@@ -326,7 +326,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
             "all",
           ],
           "type": "string",
@@ -338,7 +338,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:5eb490e3",
+    "contract_hash": "fnv1a32:b9d4c34a",
     "inputSchema": {
       "properties": {
         "agent": {
@@ -346,7 +346,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -393,7 +393,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:64ab5f94",
+    "contract_hash": "fnv1a32:c909b4f5",
     "inputSchema": {
       "properties": {
         "assigned_to": {
@@ -401,7 +401,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -437,7 +437,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:733a9727",
+    "contract_hash": "fnv1a32:8b11a974",
     "inputSchema": {
       "properties": {
         "assigned_to": {
@@ -446,7 +446,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
             "all",
           ],
           "type": "string",
@@ -477,7 +477,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:8b051058",
+    "contract_hash": "fnv1a32:87e59eab",
     "inputSchema": {
       "properties": {
         "assigned_to": {
@@ -485,7 +485,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -521,7 +521,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:7ab5d99a",
+    "contract_hash": "fnv1a32:229b74f7",
     "inputSchema": {
       "properties": {
         "initiated_by": {
@@ -529,7 +529,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -567,7 +567,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:06a97405",
+    "contract_hash": "fnv1a32:9e4b4bdc",
     "inputSchema": {
       "properties": {
         "agent": {
@@ -575,7 +575,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -644,7 +644,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:ba088010",
+    "contract_hash": "fnv1a32:f794d66b",
     "inputSchema": {
       "properties": {
         "action_items": {
@@ -658,7 +658,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -709,7 +709,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:cf3a5dd0",
+    "contract_hash": "fnv1a32:fd20d98f",
     "inputSchema": {
       "properties": {
         "created_by": {
@@ -717,7 +717,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -751,7 +751,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:87822c9d",
+    "contract_hash": "fnv1a32:a61b2038",
     "inputSchema": {
       "properties": {
         "agent": {
@@ -759,7 +759,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -804,7 +804,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:0ef37aa1",
+    "contract_hash": "fnv1a32:9e8e9059",
     "inputSchema": {
       "properties": {
         "changed_files": {
@@ -818,7 +818,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -842,7 +842,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -859,7 +859,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:3441d0a9",
+    "contract_hash": "fnv1a32:359628b0",
     "inputSchema": {
       "properties": {
         "agent": {
@@ -867,7 +867,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -890,7 +890,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:71a2682d",
+    "contract_hash": "fnv1a32:c6e0c35a",
     "inputSchema": {
       "properties": {
         "accepted": {
@@ -902,7 +902,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -920,7 +920,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:4ad2ab0c",
+    "contract_hash": "fnv1a32:0dcb2363",
     "inputSchema": {
       "properties": {
         "agent": {
@@ -928,7 +928,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -950,7 +950,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:6e27472c",
+    "contract_hash": "fnv1a32:a7d633fd",
     "inputSchema": {
       "properties": {
         "agent": {
@@ -958,7 +958,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -976,7 +976,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:18d8c0b5",
+    "contract_hash": "fnv1a32:10dadccc",
     "inputSchema": {
       "properties": {
         "agent": {
@@ -984,7 +984,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },
@@ -1120,7 +1120,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:299cdd3e",
+    "contract_hash": "fnv1a32:b8e565a9",
     "inputSchema": {
       "properties": {
         "active_lock": {
@@ -1134,7 +1134,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "codex",
             "claude",
             "opencode",
-            "minimax",
+            "hermes",
           ],
           "type": "string",
         },

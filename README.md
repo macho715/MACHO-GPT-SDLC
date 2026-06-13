@@ -25,6 +25,8 @@ Current verified runtime:
 - Handoff, event, and file-change logging.
 - Public read-only dashboard shell plus dashboard, status, and per-project session snapshot APIs (writes stay key-gated). Updated 2026-06-13.
 - Agent presence/heartbeat: agents report status via `update_state`; the dashboard shows `online`/`stale`/`offline`/`unknown` (never-connected). See [docs/agent-heartbeat.md](docs/agent-heartbeat.md). Added 2026-06-13.
+- dev hub pickup trigger: typing `dev hub` (or `/dev-hub`) in any agent runs `get_handoff` → `get_dashboard` → `list_tasks` and resumes handed-off work. See [docs/dev-hub-pickup.md](docs/dev-hub-pickup.md). Added 2026-06-13.
+- Dashboard usability: a dev hub usage panel with click-to-copy trigger chips, a collapse-all toggle, keyboard shortcuts (`r` refresh, `?` help), and a local-folder chip in the session header. Added 2026-06-13.
 - Tool schema contract metadata: `schema_version` and `contract_hash` on every tool.
 - Secret leak scan for docs, source, and tests.
 
