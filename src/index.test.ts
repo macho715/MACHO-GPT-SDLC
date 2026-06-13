@@ -34,48 +34,29 @@ describe('worker entrypoint', () => {
     expect(response.headers.get('Content-Type')).toContain('text/html');
     const body = await response.text();
     expect(body).toContain('MCP Dev Hub');
-    expect(body).toContain('mcp_api_key');
   });
 
-  it('injects the API_KEY default only when DASHBOARD_AUTOFILL=1', async () => {
-    const autofill = await worker.fetch(new Request('http://localhost/dashboard'), {
-      ...env,
-      DASHBOARD_AUTOFILL: '1',
-    });
-    expect(await autofill.text()).toContain('<API_KEY>');
-
-    const plain = await worker.fetch(new Request('http://localhost/dashboard'), env);
-    const body = await plain.text();
+  it('never embeds the API_KEY in the public dashboard shell', async () => {
+    const response = await worker.fetch(new Request('http://localhost/dashboard'), env);
+    const body = await response.text();
     expect(body).not.toContain('<API_KEY>');
-    expect(body).toContain('DEFAULT_KEY = ""');
   });
 
-  it('rejects /api/dashboard and /api/mcp-status without a key', async () => {
+  it('serves read-only /api/dashboard and /api/mcp-status publicly (no key)', async () => {
     const d = await worker.fetch(new Request('http://localhost/api/dashboard'), env);
-    expect(d.status).toBe(401);
+    expect(d.status).toBe(200);
     const s = await worker.fetch(new Request('http://localhost/api/mcp-status'), env);
-    expect(s.status).toBe(401);
+    expect(s.status).toBe(200);
   });
 
-  it('serves /api/dashboard JSON with a valid key', async () => {
-    const req = new Request('http://localhost/api/dashboard', {
-      headers: { 'x-api-key': '<API_KEY>' },
-    });
-    const response = await worker.fetch(req, env);
+  it('serves /api/dashboard JSON', async () => {
+    const response = await worker.fetch(new Request('http://localhost/api/dashboard'), env);
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({ agents: [], active_session: null });
   });
 
-  it('rejects /api/projects without a key', async () => {
+  it('serves /api/projects publicly without a key', async () => {
     const response = await worker.fetch(new Request('http://localhost/api/projects'), env);
-    expect(response.status).toBe(401);
-  });
-
-  it('serves /api/projects JSON with a valid key', async () => {
-    const req = new Request('http://localhost/api/projects', {
-      headers: { 'x-api-key': '<API_KEY>' },
-    });
-    const response = await worker.fetch(req, env);
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
       projects: [],

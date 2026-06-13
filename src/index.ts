@@ -55,22 +55,17 @@ export default {
         });
       }
 
-      // Dashboard shell is public (read-only HTML with no embedded data).
-      // The live data it fetches is gated below by the same API_KEY auth.
-      // Auto-fill the key ONLY when DASHBOARD_AUTOFILL=1, which lives in
-      // .dev.vars (loaded by `wrangler dev`, never shipped by `wrangler deploy`).
-      // A deployed worker has no such flag, so the public page never leaks a key.
+      // Dashboard shell is public static HTML with no embedded secret.
       if (path === '/dashboard') {
-        const defaultKey = env.DASHBOARD_AUTOFILL === '1' ? (env.API_KEY ?? '') : '';
-        return new Response(renderDashboardPage(defaultKey), {
+        return new Response(renderDashboardPage(), {
           headers: { ...cors(), 'Content-Type': 'text/html; charset=utf-8' },
         });
       }
 
+      // Read-only snapshot routes are PUBLIC so the dashboard loads with no key
+      // prompt. They expose data only; every write path (POST / MCP tools) below
+      // still requires x-api-key. Never serve a secret from these routes.
       if (path === '/api/dashboard' || path === '/api/mcp-status' || path === '/api/projects') {
-        if (!auth(request, env)) {
-          return jsonResponse({ error: 'Unauthorized' }, { status: 401 });
-        }
         try {
           let data: unknown;
           if (path === '/api/dashboard') {

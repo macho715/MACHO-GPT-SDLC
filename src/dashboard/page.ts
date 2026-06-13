@@ -3,15 +3,15 @@
  *
  * One HTML string, zero build step, zero npm runtime deps. The only external
  * request is an optional Google Fonts @import (Fira Code/Sans) which degrades
- * to system fonts if blocked. All live data is fetched client-side from the
- * authenticated /api/* routes using an x-api-key held in localStorage — the
- * key is never placed in the URL.
+ * to system fonts if blocked. Live data is fetched client-side from the public
+ * read-only GET /api/* routes, so the dashboard loads with no key prompt. Write
+ * operations (POST / MCP tools) stay gated by x-api-key on the server.
  *
  * NOTE: the client <script> below intentionally uses string concatenation and
  * avoids backticks / template-literal syntax so it can live inside this outer
  * template literal without escaping.
  */
-export function renderDashboardPage(defaultKey = ''): string {
+export function renderDashboardPage(): string {
   return `<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -152,17 +152,6 @@ export function renderDashboardPage(defaultKey = ''): string {
   .st.closed { color: var(--fg-dim); }
 
   /* key overlay */
-  .overlay { position: fixed; inset: 0; background: rgba(2,6,23,.85); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
-  .overlay.show { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; width: 100%; max-width: 420px; }
-  .modal h2 { margin: 0 0 6px; font-size: 16px; }
-  .modal p { margin: 0 0 14px; color: var(--fg-dim); font-size: 13px; }
-  .modal label { display: block; font-size: 12px; color: var(--fg-dim); margin-bottom: 6px; }
-  .modal input { width: 100%; padding: 10px; font-family: var(--mono); font-size: 14px; background: var(--bg); color: var(--fg); border: 1px solid var(--border); border-radius: 8px; min-height: 44px; }
-  .modal input:focus-visible { outline: 2px solid var(--info); outline-offset: 1px; }
-  .modal .err { color: var(--danger); font-size: 12px; min-height: 16px; margin-top: 8px; }
-  .modal .actions { margin-top: 14px; display: flex; justify-content: flex-end; }
-  .modal button.primary { background: var(--accent); color: #052e16; border-color: var(--accent); font-weight: 600; }
 
   footer { color: var(--fg-dim); font-size: 12px; text-align: center; padding: 18px 0 4px; }
 
@@ -182,7 +171,6 @@ export function renderDashboardPage(defaultKey = ''): string {
       <span id="updated" class="pill" aria-live="polite"><span class="num">—</span></span>
       <button id="refreshBtn" type="button" aria-label="새로고침">새로고침</button>
       <button id="autoBtn" type="button" aria-pressed="true">auto 5s: on</button>
-      <button id="keyBtn" type="button">API key</button>
     </header>
 
     <div id="connZone"></div>
@@ -225,30 +213,12 @@ export function renderDashboardPage(defaultKey = ''): string {
       <div id="projects" class="proj-list"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
     </section>
 
-    <footer>D1 SSOT · 5초 polling · 인증된 /api 경로에서만 데이터 fetch</footer>
-  </div>
-
-  <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="ov-title">
-    <div class="modal">
-      <h2 id="ov-title">API key 입력</h2>
-      <p>대시보드 데이터는 인증된 요청으로만 불러옵니다. 키는 이 브라우저(localStorage)에만 저장되며 URL에 노출되지 않습니다.</p>
-      <label for="keyInput">x-api-key</label>
-      <input id="keyInput" type="password" autocomplete="off" spellcheck="false" />
-      <div id="keyErr" class="err" role="alert"></div>
-      <div class="actions"><button id="saveKey" type="button" class="primary">저장 후 연결</button></div>
-    </div>
+    <footer>D1 SSOT · 5초 polling · 공개 읽기 전용 /api (변경은 인증 필요)</footer>
   </div>
 
 <script>
 (function () {
   'use strict';
-  var KEY_NAME = 'mcp_api_key';
-  // Injected by the server only outside production (see index.ts) so a public
-  // prod /dashboard never ships a secret. In dev it auto-fills the key.
-  var DEFAULT_KEY = ${JSON.stringify(defaultKey)};
-  var apiKey = '';
-  try { apiKey = localStorage.getItem(KEY_NAME) || ''; } catch (e) { apiKey = ''; }
-  if (!apiKey) { apiKey = DEFAULT_KEY; }
   var timer = null;
   var auto = true;
   var failures = 0;
@@ -265,13 +235,6 @@ export function renderDashboardPage(defaultKey = ''): string {
     if (sec < 3600) return Math.floor(sec / 60) + 'm';
     return Math.floor(sec / 3600) + 'h';
   }
-
-  function showOverlay(msg) {
-    el('keyErr').textContent = msg || '';
-    el('overlay').classList.add('show');
-    el('keyInput').focus();
-  }
-  function hideOverlay() { el('overlay').classList.remove('show'); }
 
   function setPill(node, text, cls) {
     node.textContent = text;
@@ -294,16 +257,10 @@ export function renderDashboardPage(defaultKey = ''): string {
   }
 
   async function load() {
-    if (!apiKey) { showOverlay(''); return; }
-    var headers = { 'x-api-key': apiKey };
     try {
-      var sRes = await fetch('/api/mcp-status', { headers: headers });
-      var dRes = await fetch('/api/dashboard', { headers: headers });
-      var pRes = await fetch('/api/projects', { headers: headers });
-      if (sRes.status === 401 || dRes.status === 401) {
-        showOverlay('인증 실패 — 키를 확인하세요.');
-        return;
-      }
+      var sRes = await fetch('/api/mcp-status');
+      var dRes = await fetch('/api/dashboard');
+      var pRes = await fetch('/api/projects');
       if (!sRes.ok || !dRes.ok) {
         failures++;
         setPill(el('serverPill'), 'server error', 'bad');
@@ -495,39 +452,14 @@ export function renderDashboardPage(defaultKey = ''): string {
     el('autoBtn').textContent = 'auto 5s: ' + (on ? 'on' : 'off');
     el('autoBtn').setAttribute('aria-pressed', on ? 'true' : 'false');
     if (timer) { clearInterval(timer); timer = null; }
-    // Never poll without a key — load() would re-open the overlay and wipe the
-    // field the user is typing into.
-    if (on && apiKey) { timer = setInterval(load, 5000); }
+    if (on) { timer = setInterval(load, 5000); }
   }
 
   el('refreshBtn').addEventListener('click', load);
   el('autoBtn').addEventListener('click', function () { setAuto(!auto); });
-  el('keyBtn').addEventListener('click', function () {
-    el('keyInput').value = apiKey;
-    showOverlay('');
-  });
-  el('saveKey').addEventListener('click', function () {
-    var v = el('keyInput').value.trim();
-    if (!v) { el('keyErr').textContent = '키를 입력하세요.'; return; }
-    apiKey = v;
-    try { localStorage.setItem(KEY_NAME, v); } catch (e) {}
-    hideOverlay();
-    setAuto(true);
-    load();
-  });
-  el('keyInput').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') { el('saveKey').click(); }
-  });
-  el('overlay').addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && apiKey) { hideOverlay(); }
-  });
 
-  if (!apiKey) {
-    showOverlay('');
-  } else {
-    load();
-    setAuto(true);
-  }
+  load();
+  setAuto(true);
 })();
 </script>
 </body>
