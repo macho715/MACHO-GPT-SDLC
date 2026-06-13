@@ -147,6 +147,20 @@ export function renderDashboardPage(): string {
   .folder-chip svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; flex: none; }
   .folder-chip.none { background: var(--muted); border-color: var(--border); color: var(--fg-dim); font-weight: 500; }
 
+  /* dev hub usage help panel */
+  .help-lead { margin: 0 0 10px; font-size: 13px; color: var(--fg); }
+  .help-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .help-label { font-size: 11px; color: var(--fg-dim); font-family: var(--mono); min-width: 44px; }
+  .help-kbd { font-family: var(--mono); font-size: 11px; padding: 2px 7px; border-radius: 6px; background: var(--muted); border: 1px solid var(--border); color: var(--fg); }
+  button.help-kbd { min-height: 0; line-height: 1.5; cursor: pointer; transition: background 140ms ease, border-color 140ms ease, color 140ms ease; }
+  button.help-kbd:hover { border-color: var(--fg-dim); }
+  .help-kbd.copied { background: rgba(34,197,94,.18); border-color: var(--accent); color: var(--accent); }
+  .help-hint { font-size: 10px; color: var(--fg-dim); font-family: var(--mono); margin-left: 2px; }
+  .help-seq { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .help-steps { margin: 0 0 8px; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; color: var(--fg); }
+  .help-foot { margin: 0; font-size: 11px; color: var(--fg-dim); }
+  .help-foot code { font-family: var(--mono); }
+
   /* project → session tree (grouped by local folder) */
   .proj-section { margin-top: 16px; }
   .proj-list { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
@@ -189,12 +203,28 @@ export function renderDashboardPage(): string {
       <span id="toolsPill" class="pill">tools ?</span>
       <div class="spacer"></div>
       <span id="updated" class="pill" aria-live="polite"><span class="num">—</span></span>
+      <button id="collapseAllBtn" type="button" aria-pressed="false">전체 접기</button>
       <button id="refreshBtn" type="button" aria-label="새로고침">새로고침</button>
       <button id="autoBtn" type="button" aria-pressed="true">auto 5s: on</button>
     </header>
 
     <div id="connZone"></div>
     <div id="zeroZone"></div>
+
+    <section class="panel" aria-labelledby="h-help">
+      <h2><button class="panel-toggle" type="button" id="h-help" aria-expanded="true" aria-controls="body-help"><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>dev hub 사용법</button></h2>
+      <div class="panel-body" id="body-help"><div class="panel-inner">
+        <p class="help-lead">채팅창에 <span class="help-kbd">dev hub</span> 입력 → 내게 온 인계·태스크를 자동으로 체크하고 작업을 이어받습니다.</p>
+        <div class="help-row"><span class="help-label">트리거</span><button class="help-kbd" type="button" data-copy="dev hub">dev hub</button><button class="help-kbd" type="button" data-copy="devhub">devhub</button><button class="help-kbd" type="button" data-copy="dev-hub">dev-hub</button><button class="help-kbd" type="button" data-copy="데브허브">데브허브</button><button class="help-kbd" type="button" data-copy="/dev-hub">/dev-hub</button><span class="help-hint">클릭하면 복사</span></div>
+        <div class="help-row"><span class="help-label">동작</span><span class="help-seq">get_handoff → get_dashboard → list_tasks</span></div>
+        <ol class="help-steps">
+          <li><b>핸드오프 있음</b> → ack 후 이어받기 (update_state working → done)</li>
+          <li><b>할당 태스크만</b> → 해당 태스크 계속 수행</li>
+          <li><b>둘 다 없음</b> → "이어받을 작업 없음" 보고 (임의 작업 안 함)</li>
+        </ol>
+        <p class="help-foot">상세 규칙: <code>docs/dev-hub-pickup.md</code> · 각 에이전트는 <code>/dev-hub</code> 슬래시로도 호출</p>
+      </div></div>
+    </section>
 
     <div class="grid">
       <section class="panel" aria-labelledby="h-agents">
@@ -389,7 +419,7 @@ export function renderDashboardPage(): string {
       var folder = folderName(proj);
       var folderHtml = folder
         ? '<span class="folder-chip" title="' + esc(proj) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>' + esc(folder) + '</span> '
-        : '<span class="folder-chip none">폴더 미지정</span> ';
+        : '<span class="folder-chip none" title="start_session에 project=<폴더 경로>를 전달하면 폴더명이 표시됩니다">폴더 미지정</span> ';
       sb += '<div class="row" style="margin-bottom:10px;gap:8px;flex-wrap:wrap">' + folderHtml
         + '<span class="name num">' + esc(d.active_session.id || '')
         + '</span><span class="muted-text">' + esc(d.active_session.title || '') + '</span></div>';
@@ -544,13 +574,80 @@ export function renderDashboardPage(): string {
       if (nowCollapsed && idx === -1) { cur.push(id); }
       else if (!nowCollapsed && idx !== -1) { cur.splice(idx, 1); }
       saveCollapsed(cur);
+      updateCollapseBtn();
     });
   }
+
+  // ── 트리거 칩 클릭 → 클립보드 복사 (편의성 #1) ──────────────────
+  function fallbackCopy(text) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    } catch (e) { /* clipboard unavailable — silent */ }
+  }
+  function flashCopied(btn) {
+    btn.classList.add('copied');
+    btn.textContent = '복사됨';
+    setTimeout(function () {
+      btn.classList.remove('copied');
+      btn.textContent = btn.getAttribute('data-copy') || '';
+    }, 1100);
+  }
+  function copyText(text, btn) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { flashCopied(btn); },
+        function () { fallbackCopy(text); flashCopied(btn); });
+    } else { fallbackCopy(text); flashCopied(btn); }
+  }
+  document.addEventListener('click', function (ev) {
+    var t = ev.target;
+    while (t && t !== document && !(t.getAttribute && t.getAttribute('data-copy'))) { t = t.parentNode; }
+    if (t && t.getAttribute && t.getAttribute('data-copy')) { copyText(t.getAttribute('data-copy'), t); }
+  });
+
+  // ── 전체 접기/펼치기 (편의성 #3) ──────────────────────────────
+  function anyExpanded() {
+    var panels = document.querySelectorAll('.panel');
+    for (var i = 0; i < panels.length; i++) { if (!panels[i].classList.contains('collapsed')) { return true; } }
+    return false;
+  }
+  function updateCollapseBtn() {
+    var b = el('collapseAllBtn'); if (!b) { return; }
+    var exp = anyExpanded();
+    b.textContent = exp ? '전체 접기' : '전체 펼치기';
+    b.setAttribute('aria-pressed', exp ? 'false' : 'true');
+  }
+  function setAllCollapsed(collapse) {
+    var toggles = document.querySelectorAll('.panel-toggle');
+    var ids = [];
+    for (var i = 0; i < toggles.length; i++) {
+      var btn = toggles[i];
+      var panel = btn.closest('.panel');
+      if (!panel) { continue; }
+      var id = btn.getAttribute('aria-controls');
+      if (collapse) { panel.classList.add('collapsed'); btn.setAttribute('aria-expanded', 'false'); ids.push(id); }
+      else { panel.classList.remove('collapsed'); btn.setAttribute('aria-expanded', 'true'); }
+    }
+    saveCollapsed(collapse ? ids : []);
+    updateCollapseBtn();
+  }
+  el('collapseAllBtn').addEventListener('click', function () { setAllCollapsed(anyExpanded()); });
+
+  // ── 키보드 단축키 (편의성 #4): r=새로고침, ?=도움말 토글 ──────────
+  document.addEventListener('keydown', function (ev) {
+    var tag = (ev.target && ev.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || ev.metaKey || ev.ctrlKey || ev.altKey) { return; }
+    if (ev.key === 'r' || ev.key === 'R') { load(); }
+    else if (ev.key === '?') { var hb = el('h-help'); if (hb) { hb.click(); hb.focus(); } }
+  });
 
   el('refreshBtn').addEventListener('click', load);
   el('autoBtn').addEventListener('click', function () { setAuto(!auto); });
 
   initPanels();
+  updateCollapseBtn();
   load();
   setAuto(true);
 })();
