@@ -1,308 +1,67 @@
-# Plan: MCP DEV HUB v3 리팩터링 (src/ 통합 + tools 분할)
+# Plan — mcp-dev-hub v3 (현행 상태 + 로드맵)
 
-## 목표
+> 최종 갱신: 2026-06-13 · 상태: **v3 안정화·프로덕션 운영 중**
+> 이 문서는 완료된 리팩터 계획서가 아니라 **현재 상태 스냅샷 + 다음 작업**이다.
+> 구조 상세는 [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md)·[SYSTEM_LAYOUT.md](SYSTEM_LAYOUT.md), 이력은 [CHANGELOG.md](CHANGELOG.md) 참조.
 
-v1/v2/v3 중복 코드를 정리하고, v3를 표준 `src/` 구조로 통합. 1,127줄 단일 파일을 12개 도메인 파일로 분할.
+## 1. 현재 상태 (As-Is, 검증됨)
 
-## 문제 (As-Is)
+| 영역           | 상태                                                             | 근거                                                           |
+| -------------- | ---------------------------------------------------------------- | -------------------------------------------------------------- |
+| 코드 구조      | `src/` 단일 트리, 루트 레거시 v1/v2/v3 **0개**                   | commit `c1557bb` (제거 완료)                                   |
+| 도구           | **36 tools** / 10 도메인, 계약 해시·`schema_version` 부착        | `/health`, `src/tools/index.ts`                                |
+| 데이터         | Cloudflare D1 SSOT, 16 테이블, prepared statement                | `src/db/schema.sql`                                            |
+| 배포           | 프로덕션 운영 중                                                 | `https://mcp-dev-hub.mscho715.workers.dev`, Version `475bdfff` |
+| 대시보드       | 공개 읽기 전용 GET(`/dashboard`·`/api/*`), 5초 polling           | `src/dashboard/`                                               |
+| 협업 AI        | **codex · claude · opencode · hermes** (4번째 = hermes)          | `ef9c97e`·`06f08cc` (minimax→hermes 전환 완료)                 |
+| Presence       | heartbeat 모델 (online≤120s·stale≤600s·offline·unknown=미연결)   | `src/dashboard/data.ts` `derivePresence`                       |
+| dev hub 트리거 | `dev hub` 입력 → `get_handoff`→`get_dashboard`→`list_tasks` 픽업 | [docs/dev-hub-pickup.md](docs/dev-hub-pickup.md)               |
+| 게이트         | type-check 0 · test 76/76 · lint 0 · wrangler dry-run 빌드 OK    | `npm run validate`                                             |
 
-1. **모놀리식 파일**: `v3_tools.ts` (1,127줄, 55KB) — 32개 tool이 한 파일에 있어 가독성/유지보수성 저하
-2. **v1/v2/v3 중복**: 루트에 `index.ts`/`tools_index.ts`/`worker_index.ts` 3벌 공존
-3. **테스트 부재**: Vitest 설정만 있고 실제 테스트 코드 0개
-4. **schema 진화 추적 불가**: `v1_schema.sql` → `v2_schema.sql` → `v3_schema.sql` 각각 별개
+핵심 불변식: D1 SSOT(외부 캐시 금지) · 쓰기 POST는 API_KEY 필수 · MCP JSON-RPC 2.0 · UTF-8 경계 가드(`-32602`) · `nextId = MAX(suffix)+1`.
 
-## 변경 (To-Be)
+## 2. 최근 완료 (2026-06-13)
 
-### Phase 1: 디렉토리 구조 (v3 → src/)
+- 대시보드 + 프로젝트별 세션 패널 + collapsible UI + presence 한글 라벨
+- 세션 헤더 로컬 폴더 칩 / dev hub 사용법 패널·트리거 복사·전체접기·키보드 단축키
+- dev hub 작업 이어받기 트리거 (codex·claude·opencode·hermes 공유)
+- **minimax → hermes 4번째 AI 전환** (코드·prod D1·문서 전 계층)
+- hermes 런타임 연동 (`~/.hermes` config·skill·SOUL.md, dev-hub MCP 정식 등록 36 tools)
+- 루트 폴더 정리 (dated plan/report 9개 → `docs/archive/`)
 
-```
-src/
-  index.ts                 # v3_worker.ts 이동 (52줄)
-  tools/
-    index.ts               # v3_tools.ts → 12개 파일로 분할
-    session.ts             # start_session / get_session / close_session
-    retro.ts               # submit_retro / get_retro / finalize_retro
-    election.ts            # start_election / cast_election_vote / get_election_result
-    state.ts               # get_state / update_state
-    task.ts                # create_task / list_tasks / update_task
-    discussion.ts          # start_discussion / post_message / get_discussion / close_discussion / check_consensus
-    vote.ts                # create_vote / cast_vote / get_vote_result
-    handoff.ts             # log_handoff / get_handoff / ack_handoff
-    lock.ts                # lock_task / unlock_task
-    file.ts                # record_file_change
-    event.ts               # broadcast_event / get_events
-    dashboard.ts           # get_dashboard
-  db/
-    schema.sql             # v3_schema.sql 이동
-    queries.ts             # SQL 쿼리 모음 (선택)
-```
+## 3. 열린 작업 (To-Do)
 
-### Phase 2: tools 분할 규칙
+### T1. 문서 구조 중복 해소 (의사결정 필요) — P1
 
-- 한 파일 = 한 도메인 (32 tools ÷ 12 domains = 평균 2.7 tool/file)
-- 각 파일에 `import { Env }` + `import type` 패턴
-- 공통 유틸(`cors()`, `auth()`, `MCPReq` 타입)은 `src/lib/mcp.ts`로 추출
-- 1 tool = 1 export 함수, 평균 30~80줄
+**문제**: `README.md`의 Documentation Map은 **docs/ 영문 세트**(`docs/SYSTEM_ARCHITECTURE.md`·`docs/LAYOUT.md`·`docs/CHANGELOG.md`)를 가리키는데, 실제로 유지·갱신되는 정식본은 **루트 한국어 세트**(`SYSTEM_ARCHITECTURE.md`·`SYSTEM_LAYOUT.md`·`CHANGELOG.md`, 더 최신)다. 두 세트가 병존해 혼란.
 
-### Phase 3: 레거시 정리
+**옵션**:
 
-- 루트의 `index.ts`, `tools_index.ts`, `worker_index.ts`, `schema.sql` → `_legacy/` 폴더로 이동 (삭제 ❌)
-- `v2_*.ts`, `v1_*.ts` → `_legacy/v2/`, `_legacy/v1/`로 이동
-- `wrangler.toml`은 `main = "src/index.ts"` 유지
+- **A (권장)**: 루트 한국어 세트를 정식본으로 확정 → README Documentation Map을 루트로 재링크 → 오래된 docs/ 영문 사본 3개 제거. `docs/GUIDE.md`·`docs/dev-hub-pickup.md`·`docs/agent-heartbeat.md`·`docs/traceability/`는 고유 문서라 유지.
+- **B**: docs/ 영문 세트를 정식본으로 유지 → 루트 세트 내용을 docs/로 동기화/이관.
+- ⚠ 어느 쪽이든 README 링크와 실제 파일이 일치해야 함. **사용자 승인 후 실행** (README 구조 변경 + 파일 제거 포함).
 
-### Phase 4: 테스트 추가 (Vitest)
+### T2. hermes 종단 검증 — P2
 
-- `src/tools/session.test.ts` — start_session / get_session / close_session
-- `src/tools/retro.test.ts` — submit_retro / finalize_retro
-- `src/tools/election.test.ts` — start_election / cast_election_vote
-- `src/tools/state.test.ts` — get_state / update_state
-- `src/tools/task.test.ts` — create_task / list_tasks
-- D1 mock 패턴 사용 (CLAUDE.md에 정의됨)
+새 hermes 세션에서 `dev hub` 실행 → `update_state` idle 핑 → 대시보드 `online` 전환 실측. (연동·키·MCP 등록은 완료, 세션 reload만 남음.)
 
-## 위험 (Risks)
+### T3. 정리 후속 (선택) — P3
 
-- **R1**: 분할 중 import 순서 깨질 수 있음 → 단위 테스트로 조기 발견
-- **R2**: 32 tool 중 의존성 있는 tool (예: start_session → list_tasks) → 세션→태스크→핸드오프 순서로 분할
-- **R3**: 기존 동작 변경 (회귀) → 분할 전 E2E 스모크 테스트로 동작 보존 확인
+- gitignored 산출물 `coverage/`(687K)·`out/`(5K) 로컬 정리 (재생성됨, 저장소 영향 없음).
+- `docs/archive/` 인덱스(README 한 줄) 추가 여부.
 
-## 성공 기준 (Definition of Done)
+## 4. 범위 제외 (Out of Scope)
 
-- [ ] `src/` 구조 완성, `wrangler dev` 정상 동작
-- [ ] 32개 tool이 12개 도메인 파일에 분산 (각 파일 30~200줄)
-- [ ] `npm run type-check` 0 errors
-- [ ] `npm test` 5개 모듈 통과 (커버리지 60%+, 핵심 경로 100%)
-- [ ] `npm run lint` 0 errors
-- [x] 루트 레거시 파일 `_legacy/`로 이동 → 이후 완전 제거 ✅ Done (2026-06-13, commit `c1557bb`)
-- [ ] wrangler.toml / package.json 업데이트
+- 새 도구/기능 추가 (현 36 tools 안정화 우선)
+- D1 스키마 파괴적 변경 · API 호환성 깨는 변경
+- 성능 최적화 (측정 전 비최적화 금지)
 
-## 범위 제외 (Out of Scope)
+## 5. 성공 기준 (Definition of Done — 현행)
 
-- 새 기능 추가 (예: 새 tool) ❌
-- DB 마이그레이션 (스키마 변경) ❌
-- API 변경 (호환성 유지) ❌
-- 성능 최적화 ❌
-
-## 예상 작업량
-
-- Phase 1 (디렉토리): 5분
-- Phase 2 (tools 분할): 30분 (32 tool × 1분)
-- Phase 3 (레거시 이동): 5분
-- Phase 4 (테스트 5개): 20분
-- 총 ~60분
-
-## ENGINEERING REVIEW (auto /autoplan)
-
-Generated: 2026-06-12T14:51:46Z
-
-### Claude Subagent Findings
-
-# Engineering Review — Claude Subagent
-
-## Architecture Assessment
-
-### Component Structure
-
-```
-Extension
-├── commands/
-│   ├── export.ts     ← clipboard API + canvas render
-│   └── preview.ts     ← WebView message handling
-├── views/
-│   └── themePicker.ts ← WebView panel
-└── utils/
-    └── canvas.ts      ← cross-platform canvas
-
-Dependencies: vscode (core), canvas (node-canvas or native canvas)
-```
-
-### Coupling Analysis
-
-- export.ts depends on canvas.ts ✓ (correct)
-- preview.ts depends on vscode.window ✓ (correct)
-- No circular dependencies detected
-
-### Edge Cases (Critical)
-
-| Edge Case                     | Current Handling | Risk           |
-| ----------------------------- | ---------------- | -------------- |
-| Empty clipboard               | ❌ Not handled   | Silent failure |
-| Invalid image format          | ❌ Not handled   | Crash          |
-| Large theme (100+ tokens)     | ❌ Not handled   | Memory spike   |
-| Clipboard locked by other app | ⚠ No timeout     | Hangs forever  |
-| WebView IPC failure           | ❌ Not handled   | Orphaned panel |
-
-### Security Assessment
-
-- No new attack surface (local extension only)
-- Clipboard API is sandboxed by VS Code
-- WebView postMessage: validate origin on receive
-
-### Test Gaps
-
-| Missing Test            | Why Critical                             |
-| ----------------------- | ---------------------------------------- |
-| Empty clipboard export  | Will show error to user, not silent fail |
-| Canvas creation failure | Catches node-canvas missing              |
-| WebView IPC timeout     | Tests orphan detection                   |
-| Theme file > 100KB      | Memory regression                        |
-
-## Severity Findings
-
-| #   | Severity | Issue                               | Fix                              |
-| --- | -------- | ----------------------------------- | -------------------------------- |
-| 1   | CRITICAL | Empty clipboard not handled         | Add early exit with user message |
-| 2   | HIGH     | Clipboard lock timeout              | Add 5s timeout + error message   |
-| 3   | MEDIUM   | No test for canvas creation failure | Add unit test                    |
-
-### Codex Findings
-
-(Codex not available — degraded mode)
-
-### Architecture Diagram (new components)
-
-```
-Extension
-├── commands/export.ts  → clipboard API + canvas
-├── commands/preview.ts → WebView IPC
-├── views/themePicker.ts → WebView panel
-└── utils/canvas.ts    → cross-platform canvas
-```
-
-### Failure Modes Registry
-
-| Mode                   | Severity | Mitigation                 |
-| ---------------------- | -------- | -------------------------- |
-| Empty clipboard        | CRITICAL | Early exit + user message  |
-| Clipboard lock timeout | HIGH     | 5s timeout + error         |
-| Canvas creation fail   | MEDIUM   | Unit test + graceful error |
-| Theme > 100KB          | MEDIUM   | Memory profiling           |
-
-### Test Plan Artifact
-
-See: /c/Users/jichu/.gstack/projects/MACHO-GPT-SDLC/test-plan-20260612-185146.md
-
-**Recommendation:** APPROVE WITH FIXES — add empty clipboard handling, clipboard timeout
-
----
-
-## DX REVIEW (auto /autoplan)
-
-Generated: 2026-06-12T14:51:46Z
-DX Scope: 13 pattern matches
-
-### Claude Subagent Findings
-
-# Developer Experience Review — Claude Subagent
-
-## 1. Getting Started (TTHW)
-
-| Step         | Current                       | Target  | Delta |
-| ------------ | ----------------------------- | ------- | ----- |
-| Install      | VS Code Marketplace search    | < 2 min | ?     |
-| Auth         | None (local only)             | 0       | ✅    |
-| First export | Open command palette + Export | < 30s   | ✅    |
-
-**TTHW Assessment:** ~2 minutes to first export (marketplace install + command palette).
-
-## 2. API/CLI Naming
-
-Commands in plan:
-
-- `Export to PNG` — clear intent, ✅
-- `Theme preview` — clear, ✅
-- No CLI commands defined yet (extension context menu only)
-
-**Naming guessability:** Good for VS Code context. No conflicting names detected.
-
-## 3. Error Messages
-
-| Error            | Currently   | Should say                                                    |
-| ---------------- | ----------- | ------------------------------------------------------------- |
-| Empty clipboard  | Silent fail | "Clipboard is empty. Copy a theme to export."                 |
-| Canvas fail      | Crash       | "Canvas initialization failed. Try restarting VS Code."       |
-| Locked clipboard | Hangs       | "Clipboard is locked by another app. Wait or close that app." |
-
-## 4. Documentation
-
-- No README section on export workflow
-- No troubleshooting section
-- No keyboard shortcut docs (suggested: Cmd+Shift+E for export)
-
-## 5. Upgrade Path
-
-- VS Code marketplace handles updates ✅
-- No migration needed for initial version
-- Settings persistence: VS Code globalState API (survives upgrades ✅)
-
-## 6. Dev Environment Friction
-
-- Dev setup: standard `npm install + vsce package` ✅
-- No external dependencies (canvas is native or bundled) ✅
-- Build: `vsce package` produces .vsix ✅
-
-## 7. Tooling Quality
-
-- Debug: VS Code debugger works ✅
-- Test: No test framework specified (add vitest recommended)
-- Lint: Recommend eslint + vsce validate
-
-## 8. Extensibility
-
-- WebView IPC: well-defined message protocol ✅
-- Canvas API: can add new export formats (JPEG, SVG) without breaking
-- Theme loading: extensible to load from file system
-
-## DX Scorecard
-
-| Dimension        | Score (0-10) | Notes                         |
-| ---------------- | ------------ | ----------------------------- |
-| Getting started  | 7            | 2min TTHW, mostly marketplace |
-| API/CLI naming   | 8            | Clear, guessable              |
-| Error messages   | 4            | Missing for empty clipboard   |
-| Docs             | 5            | No troubleshooting            |
-| Upgrade path     | 9            | Marketplace handles updates   |
-| Dev env friction | 8            | Standard VS Code extension    |
-| Tooling          | 6            | No test framework             |
-| Extensibility    | 8            | Well-structured IPC           |
-
-**Overall DX: 7/10** — Good foundation, missing error states and tests.
-
-## Priority Fixes
-
-| #   | Dimension      | Fix                                       |
-| --- | -------------- | ----------------------------------------- |
-| 1   | Error messages | Add user-facing error for empty clipboard |
-| 2   | Docs           | Add troubleshooting section to README     |
-| 3   | Tooling        | Add vitest unit tests                     |
-
-### Codex Findings
-
-(Codex not available — degraded mode)
-
-### Developer Journey Map
-
-## Developer Journey Map
-
-| #   | Stage     | Action                            | Emotional State | Friction |
-| --- | --------- | --------------------------------- | --------------- | -------- |
-| 1   | Discover  | Search VS Code marketplace        | Curiosity       | Low      |
-| 2   | Install   | Click Install                     | Trust (ratings) | Low      |
-| 3   | First use | Open command palette              | "Where is it?"  | Medium   |
-| 4   | Export    | Copy theme → Cmd+Shift+P → Export | Success         | Low      |
-| 5   | Error     | Empty clipboard                   | Confusion       | HIGH     |
-| 6   | Retry     | Copy theme → Export               | Relief          | Low      |
-| 7   | Share     | Right-click .png → Send           | Delight         | Low      |
-
-**Key friction points:** Step 3 (discovery), Step 5 (empty clipboard error)
-
-### DX Implementation Checklist
-
-- [ ] Add empty clipboard error message
-- [ ] Add troubleshooting section to README
-- [ ] Add vitest unit tests
-- [ ] Add keyboard shortcut (Cmd+Shift+E)
-- [ ] Document error codes
-
-**Recommendation:** APPROVE WITH CONCERNS — add error states, documentation, tests
-
----
+- [x] `src/` 단일 구조, 레거시 0 (`c1557bb`)
+- [x] 36 tools, 프로덕션 배포·`/health` OK
+- [x] `npm run validate` 통과 (type 0 · test 76/76 · lint 0 · secrets 0)
+- [x] minimax→hermes 전 계층 전환
+- [x] 루트 dated 문서 `docs/archive/` 이관
+- [ ] T1 문서 중복 해소 (사용자 의사결정)
+- [ ] T2 hermes 종단 검증
