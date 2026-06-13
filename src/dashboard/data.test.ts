@@ -6,7 +6,7 @@ const meta: McpStatusMeta = {
   server: 'mcp-dev-hub',
   version: '3.0.0',
   features: ['state', 'session'],
-  toolCount: 31,
+  toolCount: 32,
 };
 
 describe('buildDashboardData', () => {
@@ -69,7 +69,7 @@ describe('buildMcpStatus', () => {
     expect(status.ok).toBe(true);
     expect(status.db.connected).toBe(true);
     expect(status.server).toBe('mcp-dev-hub');
-    expect(status.tool_count).toBe(31);
+    expect(status.tool_count).toBe(32);
   });
 
   it('derives heartbeat presence from updated_at age', async () => {

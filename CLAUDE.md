@@ -64,7 +64,7 @@ src/
 - ✅ **로깅**: `console.log` 대신 구조화된 JSON 로그
 - ❌ **하드코딩 비밀 금지**: API_KEY는 `env.API_KEY` (Cloudflare Secret)
 - ❌ **SQL Injection 방지**: 반드시 prepared statement (`.bind()`)
-- ✅ **UTF-8 경계 검증** (2026-06-13 추가): 요청 body에 `U+FFFD` 포함 시 `-32602` 거부 — 비-UTF-8(CP949 등) 손상 payload의 D1 저장 방지 (`src/index.ts`)
+- ✅ **UTF-8 경계 검증** (2026-06-13 추가): 요청 body 바이트를 fatal UTF-8 디코더로 검증하고 손상 payload는 `-32602`로 거부 (`src/index.ts`)
 - ✅ **ID 생성 규칙** (2026-06-13 추가): `nextId`는 `MAX(suffix)+1` 사용 — `COUNT(*)` 금지(행 삭제 gap 시 ID 충돌) (`src/lib/mcp.ts`)
 
 ## v3 아키텍처 — 세션 라이프사이클
@@ -129,7 +129,7 @@ curl http://localhost:8787/health
     "dev-hub": {
       "type": "url",
       "url": "http://localhost:8787",
-      "headers": { "x-api-key": "test-key" }
+      "headers": { "x-api-key": "YOUR_API_KEY" }
     }
   }
 }

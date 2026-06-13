@@ -4,11 +4,11 @@ import { createD1Mock } from '../tests/helpers/d1Mock';
 
 const env = {
   DB: createD1Mock(),
-  API_KEY: 'test-key',
+  API_KEY: '<API_KEY>',
   ENVIRONMENT: 'test',
 };
 
-const post = (body: unknown, apiKey = 'test-key') =>
+const post = (body: unknown, apiKey = '<API_KEY>') =>
   new Request('http://localhost/', {
     method: 'POST',
     headers: {
@@ -42,11 +42,11 @@ describe('worker entrypoint', () => {
       ...env,
       DASHBOARD_AUTOFILL: '1',
     });
-    expect(await autofill.text()).toContain('test-key');
+    expect(await autofill.text()).toContain('<API_KEY>');
 
     const plain = await worker.fetch(new Request('http://localhost/dashboard'), env);
     const body = await plain.text();
-    expect(body).not.toContain('test-key');
+    expect(body).not.toContain('<API_KEY>');
     expect(body).toContain('DEFAULT_KEY = ""');
   });
 
@@ -59,7 +59,7 @@ describe('worker entrypoint', () => {
 
   it('serves /api/dashboard JSON with a valid key', async () => {
     const req = new Request('http://localhost/api/dashboard', {
-      headers: { 'x-api-key': 'test-key' },
+      headers: { 'x-api-key': '<API_KEY>' },
     });
     const response = await worker.fetch(req, env);
     expect(response.status).toBe(200);
@@ -68,7 +68,7 @@ describe('worker entrypoint', () => {
 
   it('serves /api/mcp-status JSON with server meta and zero flags', async () => {
     const req = new Request('http://localhost/api/mcp-status', {
-      headers: { 'x-api-key': 'test-key' },
+      headers: { 'x-api-key': '<API_KEY>' },
     });
     const response = await worker.fetch(req, env);
     expect(response.status).toBe(200);
@@ -78,7 +78,7 @@ describe('worker entrypoint', () => {
       zero_flags: { blocked_escalation: boolean; handoff_pending: boolean };
     };
     expect(payload.server).toBe('mcp-dev-hub');
-    expect(payload.tool_count).toBe(31);
+    expect(payload.tool_count).toBe(32);
     expect(payload.zero_flags.blocked_escalation).toBe(false);
   });
 
@@ -117,28 +117,45 @@ describe('worker entrypoint', () => {
 
     const listed = await worker.fetch(post({ jsonrpc: '2.0', id: 2, method: 'tools/list' }), env);
     const payload = (await listed.json()) as { result: { tools: unknown[] } };
-    expect(payload.result.tools).toHaveLength(31);
+    expect(payload.result.tools).toHaveLength(32);
   });
 
-  it('rejects requests whose body contains U+FFFD (invalid UTF-8)', async () => {
+  it('rejects requests with invalid UTF-8 bytes before JSON parsing', async () => {
+    const response = await worker.fetch(
+      new Request('http://localhost/', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-api-key': '<API_KEY>',
+        },
+        body: new Uint8Array([0xff]),
+      }),
+      env
+    );
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({ error: { code: -32602 } });
+  });
+
+  it('accepts a legitimate U+FFFD replacement character in valid JSON', async () => {
     const response = await worker.fetch(
       post({
         jsonrpc: '2.0',
-        id: 8,
+        id: 10,
         method: 'tools/call',
         params: {
           name: 'broadcast_event',
           arguments: {
             event_type: 'info',
             agent: 'codex',
-            message: 'MCP v3 �� 테스트 완료',
+            message: 'Copied log marker: �',
           },
         },
       }),
       env
     );
-    expect(response.status).toBe(400);
-    await expect(response.json()).resolves.toMatchObject({ error: { code: -32602 } });
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as { error?: unknown };
+    expect(payload.error).toBeUndefined();
   });
 
   it('accepts clean Korean payloads (regression for UTF-8 guard)', async () => {
@@ -194,7 +211,7 @@ describe('worker entrypoint', () => {
     const parseError = await worker.fetch(
       new Request('http://localhost/', {
         method: 'POST',
-        headers: { 'x-api-key': 'test-key' },
+        headers: { 'x-api-key': '<API_KEY>' },
         body: '{',
       }),
       env
@@ -246,7 +263,7 @@ describe('worker entrypoint', () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        authorization: 'Bearer test-key',
+        authorization: 'Bearer <API_KEY>',
       },
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'ping' }),
     });

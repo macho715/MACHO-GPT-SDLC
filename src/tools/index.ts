@@ -10,9 +10,11 @@ import { handoffHandlers, handoffTools } from './handoff';
 import { lockHandlers, lockTools } from './lock';
 import { fileHandlers, fileTools } from './file';
 import { eventHandlers, eventTools } from './event';
-import { fail, type ToolDefinition, type ToolHandler, type ToolResult } from '../lib/mcp';
+import { guardHandlers, guardTools } from './guard';
+import { fail, withToolContracts, type ToolHandler, type ToolResult } from '../lib/mcp';
 
-export const tools = [
+export const tools = withToolContracts([
+  ...guardTools,
   ...dashboardTools,
   ...sessionTools,
   ...retroTools,
@@ -25,9 +27,10 @@ export const tools = [
   ...lockTools,
   ...fileTools,
   ...eventTools,
-] satisfies ToolDefinition[];
+]);
 
 const handlers: Record<string, ToolHandler> = {
+  ...guardHandlers,
   ...dashboardHandlers,
   ...sessionHandlers,
   ...retroHandlers,

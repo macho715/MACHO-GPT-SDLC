@@ -10,6 +10,7 @@ export const queryGroups = {
   vote: 'Vote queries live in src/tools/vote.ts.',
   handoff: 'Handoff queries live in src/tools/handoff.ts.',
   lock: 'Task lock queries live in src/tools/lock.ts.',
+  guard: 'Agent start guard queries live in src/tools/guard.ts.',
   file: 'File change queries live in src/tools/file.ts.',
   event: 'Event log queries live in src/tools/event.ts.',
 } as const;

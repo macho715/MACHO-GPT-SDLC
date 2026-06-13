@@ -18,7 +18,8 @@
     "lint:fix": "eslint --fix \"src/**/*.{ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,json,md}\"",
-    "validate": "npm run type-check && npm run lint && npm test"
+    "security:secrets": "node scripts/security/no-secret-leak.mjs",
+    "validate": "npm run type-check && npm run lint && npm test && npm run security:secrets"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260612.1",

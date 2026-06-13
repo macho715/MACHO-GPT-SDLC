@@ -62,6 +62,7 @@ src/
 - ✅ **에러 처리**: try/catch + MCP 에러 코드 (-32700 Parse, -32601 Method, -32603 Internal)
 - ✅ **CORS**: 모든 응답에 CORS 헤더 (`Access-Control-Allow-Origin: *`)
 - ✅ **로깅**: `console.log` 대신 구조화된 JSON 로그
+- ✅ **UTF-8 경계 검증**: 요청 body 바이트를 fatal UTF-8 디코더로 검증하고 손상 payload는 `-32602`로 거부
 - ❌ **하드코딩 비밀 금지**: API_KEY는 `env.API_KEY` (Cloudflare Secret)
 - ❌ **SQL Injection 방지**: 반드시 prepared statement (`.bind()`)
 
@@ -125,7 +126,7 @@ curl http://localhost:8787/health
     "dev-hub": {
       "type": "url",
       "url": "http://localhost:8787",
-      "headers": { "x-api-key": "test-key" }
+      "headers": { "x-api-key": "YOUR_API_KEY" }
     }
   }
 }

@@ -19,6 +19,13 @@ export type ToolDefinition = {
   description: string;
   inputSchema: Record<string, unknown>;
   annotations?: Record<string, unknown>;
+  schema_version?: string;
+  contract_hash?: string;
+};
+
+export type ContractedToolDefinition = ToolDefinition & {
+  schema_version: string;
+  contract_hash: string;
 };
 
 export type ToolResult = {
@@ -27,6 +34,8 @@ export type ToolResult = {
 };
 
 export type ToolHandler = (args: Record<string, unknown>, db: D1Database) => Promise<ToolResult>;
+
+export const TOOL_SCHEMA_VERSION = 'v3.1';
 
 const ALLOWED_ID_TABLES = new Set(['session', 'tasks', 'discussion_thread']);
 
@@ -76,3 +85,46 @@ export async function nextId(db: D1Database, table: string, prefix: string): Pro
     .first<{ m: number | null }>();
   return `${prefix}-${String((row?.m ?? 0) + 1).padStart(3, '0')}`;
 }
+
+const stableStringify = (value: unknown): string => {
+  if (value === null || typeof value !== 'object') {
+    return JSON.stringify(value);
+  }
+
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableStringify(item)).join(',')}]`;
+  }
+
+  const record = value as Record<string, unknown>;
+  return `{${Object.keys(record)
+    .sort()
+    .map((key) => `${JSON.stringify(key)}:${stableStringify(record[key])}`)
+    .join(',')}}`;
+};
+
+const fnv1a32 = (input: string): string => {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < input.length; index += 1) {
+    hash ^= input.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash.toString(16).padStart(8, '0');
+};
+
+export const buildToolContractHash = (tool: ToolDefinition): string => {
+  const payload = {
+    schema_version: TOOL_SCHEMA_VERSION,
+    name: tool.name,
+    description: tool.description,
+    inputSchema: tool.inputSchema,
+    annotations: tool.annotations ?? {},
+  };
+  return `fnv1a32:${fnv1a32(stableStringify(payload))}`;
+};
+
+export const withToolContracts = (toolDefinitions: ToolDefinition[]): ContractedToolDefinition[] =>
+  toolDefinitions.map((tool) => ({
+    ...tool,
+    schema_version: TOOL_SCHEMA_VERSION,
+    contract_hash: buildToolContractHash(tool),
+  }));
