@@ -34,11 +34,14 @@ Current verified runtime:
 
 | Document                                                                         | Purpose                                                            |
 | -------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| [docs/SYSTEM_ARCHITECTURE.md](docs/SYSTEM_ARCHITECTURE.md)                       | Runtime architecture, data flow, components, external dependencies |
-| [docs/LAYOUT.md](docs/LAYOUT.md)                                                 | Repository tree, directory responsibilities, entrypoints           |
+| [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md)                                 | Runtime architecture, data flow, components, external dependencies |
+| [SYSTEM_LAYOUT.md](SYSTEM_LAYOUT.md)                                             | Repository tree, directory responsibilities, entrypoints           |
+| [CHANGELOG.md](CHANGELOG.md)                                                     | Change history (Keep a Changelog)                                  |
 | [docs/GUIDE.md](docs/GUIDE.md)                                                   | User quickstart, developer workflow, operations, troubleshooting   |
-| [docs/CHANGELOG.md](docs/CHANGELOG.md)                                           | Verified current-state changelog and recent evidence               |
+| [docs/dev-hub-pickup.md](docs/dev-hub-pickup.md)                                 | `dev hub` 작업 이어받기 픽업 프로토콜 (SSOT)                       |
+| [docs/agent-heartbeat.md](docs/agent-heartbeat.md)                               | 에이전트 heartbeat/연동 가이드 (대시보드 online 보고)              |
 | [docs/traceability/tool-inventory-v3.md](docs/traceability/tool-inventory-v3.md) | Tool inventory with contract hashes                                |
+| [docs/archive/](docs/archive/)                                                   | 과거 plan/report 아카이브 (날짜별 스냅샷)                          |
 
 ## Quick Start
 

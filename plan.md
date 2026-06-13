@@ -31,15 +31,9 @@
 
 ## 3. 열린 작업 (To-Do)
 
-### T1. 문서 구조 중복 해소 (의사결정 필요) — P1
+### T1. 문서 구조 중복 해소 — ✅ 해소됨 (2026-06-13, 옵션 A)
 
-**문제**: `README.md`의 Documentation Map은 **docs/ 영문 세트**(`docs/SYSTEM_ARCHITECTURE.md`·`docs/LAYOUT.md`·`docs/CHANGELOG.md`)를 가리키는데, 실제로 유지·갱신되는 정식본은 **루트 한국어 세트**(`SYSTEM_ARCHITECTURE.md`·`SYSTEM_LAYOUT.md`·`CHANGELOG.md`, 더 최신)다. 두 세트가 병존해 혼란.
-
-**옵션**:
-
-- **A (권장)**: 루트 한국어 세트를 정식본으로 확정 → README Documentation Map을 루트로 재링크 → 오래된 docs/ 영문 사본 3개 제거. `docs/GUIDE.md`·`docs/dev-hub-pickup.md`·`docs/agent-heartbeat.md`·`docs/traceability/`는 고유 문서라 유지.
-- **B**: docs/ 영문 세트를 정식본으로 유지 → 루트 세트 내용을 docs/로 동기화/이관.
-- ⚠ 어느 쪽이든 README 링크와 실제 파일이 일치해야 함. **사용자 승인 후 실행** (README 구조 변경 + 파일 제거 포함).
+**결정**: 루트 한국어 세트를 단일 정식본으로 확정. README Documentation Map을 루트(`SYSTEM_ARCHITECTURE.md`·`SYSTEM_LAYOUT.md`·`CHANGELOG.md`)로 재링크하고, 오래된 `docs/` 영문 사본 3개(`docs/SYSTEM_ARCHITECTURE.md`·`docs/LAYOUT.md`·`docs/CHANGELOG.md`)를 제거. `docs/GUIDE.md`·`docs/dev-hub-pickup.md`·`docs/agent-heartbeat.md`·`docs/traceability/`·`docs/archive/`는 고유 문서라 유지.
 
 ### T2. hermes 종단 검증 — P2
 
@@ -63,5 +57,5 @@
 - [x] `npm run validate` 통과 (type 0 · test 76/76 · lint 0 · secrets 0)
 - [x] minimax→hermes 전 계층 전환
 - [x] 루트 dated 문서 `docs/archive/` 이관
-- [ ] T1 문서 중복 해소 (사용자 의사결정)
+- [x] T1 문서 중복 해소 → 옵션 A (루트 정식본 확정, docs/ 영문 사본 제거) ✅ 2026-06-13
 - [ ] T2 hermes 종단 검증
