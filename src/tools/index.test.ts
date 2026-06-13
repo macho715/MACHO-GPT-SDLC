@@ -36,12 +36,16 @@ const baselineToolNames = [
   'record_file_change',
   'broadcast_event',
   'get_events',
+  'audit_tool_contracts',
+  'get_d1_health',
+  'heartbeat',
+  'reap_stale_agents',
 ];
 
 describe('tool registry', () => {
   it('preserves the v3 tool inventory', () => {
     expect(tools.map((tool) => tool.name)).toEqual(baselineToolNames);
-    expect(tools).toHaveLength(32);
+    expect(tools).toHaveLength(36);
   });
 
   it('exposes contract metadata on every registered tool', () => {
