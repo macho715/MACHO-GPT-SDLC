@@ -1090,5 +1090,77 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "name": "get_events",
     "schema_version": "v3.1",
   },
+  {
+    "contract_hash": "fnv1a32:916ea521",
+    "inputSchema": {
+      "properties": {
+        "schema_version": {
+          "description": "감사 대상 스키마 버전 레이블",
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "audit_tool_contracts",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:62ff9351",
+    "inputSchema": {
+      "properties": {
+        "window_minutes": {
+          "default": 60,
+          "description": "집계 시간 창 (분)",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "get_d1_health",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:299cdd3e",
+    "inputSchema": {
+      "properties": {
+        "active_lock": {
+          "type": "string",
+        },
+        "active_task": {
+          "type": "string",
+        },
+        "agent": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "minimax",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "agent",
+      ],
+      "type": "object",
+    },
+    "name": "heartbeat",
+    "schema_version": "v3.1",
+  },
+  {
+    "contract_hash": "fnv1a32:4b1a09be",
+    "inputSchema": {
+      "properties": {
+        "stale_minutes": {
+          "default": 30,
+          "description": "이 시간 이상 heartbeat 없으면 stale 처리",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "reap_stale_agents",
+    "schema_version": "v3.1",
+  },
 ]
 `;

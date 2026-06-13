@@ -198,6 +198,42 @@ CREATE TABLE IF NOT EXISTS election_ballot (
   UNIQUE(election_id, agent)            -- AI당 1표
 );
 
+-- ════════════════════════════════════════════════════════════
+-- ★ P0 업그레이드: 운영성 모니터링 테이블
+-- ════════════════════════════════════════════════════════════
+
+-- P0-3: D1 작업 로그 (quota/latency 추적)
+CREATE TABLE IF NOT EXISTS d1_op_log (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  tool_name   TEXT NOT NULL,
+  agent       TEXT,
+  task_id     TEXT,
+  op_type     TEXT,                  -- read | write
+  row_count   INTEGER DEFAULT 0,
+  latency_ms  INTEGER DEFAULT 0,
+  error_code  TEXT,                  -- NULL이면 성공
+  created_at  DATETIME DEFAULT (datetime('now'))
+);
+
+-- P0-2: tool 계약 감사 결과
+CREATE TABLE IF NOT EXISTS tool_contract_audit (
+  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+  schema_version TEXT,
+  contract_hash  TEXT,
+  total_tools    INTEGER,
+  smell_count    INTEGER,
+  smells         TEXT DEFAULT '[]',  -- JSON: 발견된 품질 문제
+  audited_at     DATETIME DEFAULT (datetime('now'))
+);
+
+-- P1: agent heartbeat (stale 감지)
+CREATE TABLE IF NOT EXISTS agent_heartbeat (
+  agent        TEXT PRIMARY KEY,
+  last_beat    DATETIME DEFAULT (datetime('now')),
+  active_task  TEXT,
+  active_lock  TEXT
+);
+
 -- 초기 에이전트 등록
 -- updated_at은 NULL로 둔다: seed 직후 datetime('now')를 박으면 10분 뒤 presence가
 -- offline(빨강)으로 보여 "한 번도 연결 안 함"과 "연결됐다 끊김"이 구분되지 않는다.
