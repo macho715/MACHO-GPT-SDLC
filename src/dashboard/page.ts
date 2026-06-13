@@ -69,8 +69,20 @@ export function renderDashboardPage(defaultKey = ''): string {
   }
   .panel h2 .count { margin-left: auto; font-family: var(--mono); color: var(--fg); }
   svg.ic { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; flex: none; }
-  .empty { color: var(--fg-dim); font-size: 13px; padding: 8px 0; }
+  .empty { color: var(--fg-dim); font-size: 13px; padding: 12px 8px; display: flex; align-items: center; gap: 8px; }
+  .empty svg { width: 15px; height: 15px; opacity: .55; }
   .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* loading skeleton (shimmer; static under reduced-motion) */
+  .skel { background: linear-gradient(90deg, var(--muted) 25%, #334155 50%, var(--muted) 75%);
+    background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border-radius: 8px; }
+  .skel-row { height: 58px; margin-bottom: 10px; }
+  .skel-line { height: 38px; margin-bottom: 8px; list-style: none; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* connection-lost banner + stale clock */
+  .banner button { margin-left: auto; padding: 4px 10px; min-height: 30px; font-size: 12px; }
+  .pill.stale { color: var(--warn); border-color: var(--warn); }
 
   /* AI agent cards */
   .agents { display: grid; gap: 10px; }
@@ -143,18 +155,19 @@ export function renderDashboardPage(defaultKey = ''): string {
       <span id="dbPill" class="pill">D1 ?</span>
       <span id="toolsPill" class="pill">tools ?</span>
       <div class="spacer"></div>
-      <span id="updated" class="pill"><span class="num">—</span></span>
+      <span id="updated" class="pill" aria-live="polite"><span class="num">—</span></span>
       <button id="refreshBtn" type="button" aria-label="새로고침">새로고침</button>
       <button id="autoBtn" type="button" aria-pressed="true">auto 5s: on</button>
       <button id="keyBtn" type="button">API key</button>
     </header>
 
+    <div id="connZone"></div>
     <div id="zeroZone"></div>
 
     <div class="grid">
       <section class="panel" aria-labelledby="h-agents">
         <h2 id="h-agents">AI 상태 <span id="agentsCount" class="count num">0</span></h2>
-        <div id="agents" class="agents"><div class="empty">로딩 중…</div></div>
+        <div id="agents" class="agents"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
       </section>
 
       <section class="panel" aria-labelledby="h-session">
@@ -164,22 +177,22 @@ export function renderDashboardPage(defaultKey = ''): string {
 
       <section class="panel" aria-labelledby="h-tasks">
         <h2 id="h-tasks">활성 태스크 <span id="tasksCount" class="count num">0</span></h2>
-        <ul id="tasks" class="list"><li class="empty">로딩 중…</li></ul>
+        <ul id="tasks" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
       </section>
 
       <section class="panel" aria-labelledby="h-disc">
         <h2 id="h-disc">토론 · 투표 <span id="discCount" class="count num">0</span></h2>
-        <ul id="disc" class="list"><li class="empty">로딩 중…</li></ul>
+        <ul id="disc" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
       </section>
 
       <section class="panel" aria-labelledby="h-handoff">
         <h2 id="h-handoff">대기 핸드오프 <span id="handoffCount" class="count num">0</span></h2>
-        <ul id="handoffs" class="list"><li class="empty">로딩 중…</li></ul>
+        <ul id="handoffs" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
       </section>
 
       <section class="panel" aria-labelledby="h-events">
         <h2 id="h-events">이벤트 피드</h2>
-        <ul id="events" class="list"><li class="empty">로딩 중…</li></ul>
+        <ul id="events" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
       </section>
     </div>
 
@@ -209,6 +222,7 @@ export function renderDashboardPage(defaultKey = ''): string {
   if (!apiKey) { apiKey = DEFAULT_KEY; }
   var timer = null;
   var auto = true;
+  var failures = 0;
 
   function el(id) { return document.getElementById(id); }
   function esc(s) {
@@ -234,6 +248,21 @@ export function renderDashboardPage(defaultKey = ''): string {
     node.textContent = text;
     node.className = 'pill' + (cls ? ' ' + cls : '');
   }
+  function emptyLi(t) { return '<li class="empty">' + svg('dash') + esc(t) + '</li>'; }
+  function emptyBox(t) { return '<div class="empty">' + svg('dash') + esc(t) + '</div>'; }
+  function setConn(connected) {
+    if (connected) {
+      el('connZone').innerHTML = '';
+      el('updated').classList.remove('stale');
+      return;
+    }
+    el('connZone').innerHTML = '<div class="banner danger" role="alert">' + svg('plug')
+      + '<span>서버 연결 끊김 — 5초마다 자동 재시도 중</span>'
+      + '<button id="retryNow" type="button">지금 재시도</button></div>';
+    var r = el('retryNow');
+    if (r) { r.addEventListener('click', load); }
+    el('updated').classList.add('stale');
+  }
 
   async function load() {
     if (!apiKey) { showOverlay(''); return; }
@@ -245,14 +274,23 @@ export function renderDashboardPage(defaultKey = ''): string {
         showOverlay('인증 실패 — 키를 확인하세요.');
         return;
       }
-      if (!sRes.ok || !dRes.ok) { setPill(el('serverPill'), 'server error', 'bad'); return; }
+      if (!sRes.ok || !dRes.ok) {
+        failures++;
+        setPill(el('serverPill'), 'server error', 'bad');
+        setConn(false);
+        return;
+      }
       var status = await sRes.json();
       var data = await dRes.json();
       renderStatus(status);
       renderDashboard(data);
-      el('updated').innerHTML = '<span class="num">' + new Date().toLocaleTimeString() + '</span>';
+      failures = 0;
+      setConn(true);
+      el('updated').innerHTML = '<span class="num">갱신 ' + new Date().toLocaleTimeString() + '</span>';
     } catch (e) {
+      failures++;
       setPill(el('serverPill'), 'offline', 'bad');
+      setConn(false);
     }
   }
 
@@ -264,7 +302,7 @@ export function renderDashboardPage(defaultKey = ''): string {
     var agents = s.agents || [];
     el('agentsCount').textContent = agents.length;
     if (!agents.length) {
-      el('agents').innerHTML = '<div class="empty">등록된 에이전트 없음</div>';
+      el('agents').innerHTML = emptyBox('등록된 에이전트 없음');
     } else {
       var html = '';
       for (var i = 0; i < agents.length; i++) {
@@ -310,7 +348,7 @@ export function renderDashboardPage(defaultKey = ''): string {
       sb += '<div class="row" style="margin-bottom:10px"><span class="name num">' + esc(d.active_session.id || '')
         + '</span><span class="muted-text">' + esc(d.active_session.title || '') + '</span></div>';
     } else {
-      sb += '<div class="empty" style="margin-bottom:10px">활성 세션 없음</div>';
+      sb += '<div class="empty" style="margin-bottom:10px">' + svg('dash') + '활성 세션 없음</div>';
     }
     sb += '<div class="timeline">';
     for (var i = 0; i < stages.length; i++) {
@@ -330,7 +368,7 @@ export function renderDashboardPage(defaultKey = ''): string {
         + '<span>' + esc(t.title) + '</span></div>'
         + (t.assigned_to ? '<div class="sub muted-text">→ ' + esc(t.assigned_to) + '</div>' : '')
         + '</li>';
-    }).join('') : '<li class="empty">없음</li>';
+    }).join('') : emptyLi('없음');
 
     // discussions + votes
     var disc = (d.active_discussions || []);
@@ -343,7 +381,7 @@ export function renderDashboardPage(defaultKey = ''): string {
       return '<li><span class="tag high">vote</span> ' + esc(v.question)
         + ' <span class="muted-text num">(' + (v.ballot_count || 0) + ')</span></li>';
     }).join('');
-    el('disc').innerHTML = dh || '<li class="empty">없음</li>';
+    el('disc').innerHTML = dh || emptyLi('없음');
 
     // handoffs
     var hs = d.pending_handoffs || [];
@@ -352,19 +390,25 @@ export function renderDashboardPage(defaultKey = ''): string {
       return '<li><div class="row"><span class="name num">' + esc(h.from_agent) + ' → ' + esc(h.to_agent) + '</span>'
         + '<span class="tag">' + esc(h.task_id) + '</span></div>'
         + (h.summary ? '<div class="sub muted-text">' + esc(h.summary) + '</div>' : '') + '</li>';
-    }).join('') : '<li class="empty">없음</li>';
+    }).join('') : emptyLi('없음');
 
     // events
     var evs = d.recent_events || [];
     el('events').innerHTML = evs.length ? evs.map(function (e) {
       return '<li class="ev"><span class="tag">' + esc(e.event_type) + '</span> '
         + esc(e.agent || '') + ' <span class="when">' + esc(e.created_at || '') + '</span></li>';
-    }).join('') : '<li class="empty">없음</li>';
+    }).join('') : emptyLi('없음');
   }
 
   function svg(name) {
     if (name === 'alert') {
       return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>';
+    }
+    if (name === 'dash') {
+      return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>';
+    }
+    if (name === 'plug') {
+      return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22v-4M9 2v6M15 2v6M7 8h10v3a5 5 0 0 1-10 0Z"/></svg>';
     }
     return '';
   }
