@@ -33,8 +33,9 @@ mcp-dev-hub/
 │  │  ├─ file.ts              # record_file_change
 │  │  └─ event.ts             # broadcast_event / get_events
 │  └─ dashboard/              # 상태 대시보드 렌더
-│     ├─ data.ts              # 대시보드 데이터 집계
-│     └─ page.ts              # 대시보드 페이지 렌더
+│     ├─ data.ts              # 대시보드 데이터 집계 (buildDashboardData / buildMcpStatus)
+│     ├─ projects.ts          # 프로젝트(로컬 폴더)별 세션 그룹 집계 (buildProjectSessions, 2026-06-13)
+│     └─ page.ts              # 대시보드 HTML 셸 렌더 (공개 읽기, collapsible 패널)
 ├─ tests/
 │  └─ helpers/d1Mock.ts       # D1 테스트 더블 (handler 기반)
 ├─ docs/

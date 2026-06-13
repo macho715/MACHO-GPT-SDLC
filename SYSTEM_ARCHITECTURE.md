@@ -29,7 +29,8 @@ graph TD
 
 1. **OPTIONS** → CORS preflight 즉시 응답
 2. **GET `/health`** → 상태·버전·기능 목록 반환 (인증 불요)
-3. **POST** → ① UTF-8 경계 가드(`U+FFFD` 포함 시 `-32602` 거부) → ② API_KEY 인증(`x-api-key` 또는 `Bearer`, 실패 시 `401`) → ③ `tools/index.ts` 라우터가 `method`로 분기 → ④ 도메인 핸들러가 D1 prepared statement 실행 → ⑤ JSON-RPC `result` 반환
+3. **GET `/dashboard` · `/api/dashboard` · `/api/mcp-status` · `/api/projects`** (2026-06-13~) → 공개 읽기 전용. 대시보드 HTML 셸과 상태·프로젝트 스냅샷을 인증 없이 반환 (키 입력 프롬프트 없음). 쓰기는 불가
+4. **POST** → ① UTF-8 경계 가드(`U+FFFD` 포함 시 `-32602` 거부) → ② API_KEY 인증(`x-api-key` 또는 `Bearer`, 실패 시 `401`) → ③ `tools/index.ts` 라우터가 `method`로 분기 → ④ 도메인 핸들러가 D1 prepared statement 실행 → ⑤ JSON-RPC `result` 반환
 
 ## 3. 계층 구조
 
@@ -77,7 +78,7 @@ ZERO 규칙(deadlock·중복 방지)은 [README.md](README.md)의 "MACHO-GPT ZER
 ## 6. 핵심 불변식 (Invariants)
 
 - **D1 SSOT**: 모든 공유 상태는 D1에만. 메모리/파일/글로벌 캐시 금지.
-- **인증 필수**: 모든 POST는 `x-api-key` 또는 `Bearer` 헤더 검증 통과 필요.
+- **인증 필수(쓰기)**: 모든 POST(MCP 도구 호출)는 `x-api-key` 또는 `Bearer` 헤더 검증 통과 필요. 단 대시보드용 GET 읽기 라우트(`/dashboard`·`/api/dashboard`·`/api/mcp-status`·`/api/projects`)는 공개 읽기 전용(2026-06-13~) — 데이터는 노출되지만 자격증명은 노출되지 않으며 변경은 불가.
 - **JSON-RPC 2.0**: 응답은 항상 `{jsonrpc:'2.0', id, result|error}`. 에러 코드 -32700/-32600/-32601/-32602/-32603.
 - **UTF-8 경계 검증** (2026-06-13~): 요청 body에 `U+FFFD` 포함 시 `-32602`로 거부 — 비-UTF-8 손상 payload의 D1 저장 차단.
 - **ID 생성**: `nextId`는 `MAX(suffix)+1` (행 삭제 gap 시 충돌하는 `COUNT(*)` 금지).

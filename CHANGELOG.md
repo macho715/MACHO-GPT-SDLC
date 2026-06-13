@@ -4,6 +4,24 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/)를 따르며,
 버전은 [Semantic Versioning](https://semver.org/)을 따릅니다.
 
+## [Unreleased] - 2026-06-13
+
+### Added
+
+- **상태 대시보드** (`GET /dashboard`): AI 상태·세션 라이프사이클·태스크·토론/투표·핸드오프·이벤트 피드를 5초 polling으로 표시하는 자체 완결 HTML 셸 (`src/dashboard/page.ts`, `data.ts`)
+- **프로젝트별 세션 패널**: `start_session`에 `project`(로컬 폴더 경로) 인자 추가 + `session.project` 컬럼·`idx_session_project` 인덱스. 폴더 기준으로 세션을 그룹화해 표시 (`src/dashboard/projects.ts`, `buildProjectSessions`)
+- **Collapsible 카드 패널**: 각 패널 헤더(button) 클릭/Enter/Space로 본문 접기·펴기. `grid-template-rows 1fr↔0fr` 트랜지션, chevron 회전, `aria-expanded`/`aria-controls` 접근성, 접힘 상태 `localStorage` 영속화 (commit `926bf33`)
+- 로딩 skeleton·빈 상태 아이콘·서버 연결 끊김 자동 재시도 배너 (`prefers-reduced-motion` 준수)
+- 데스크톱 런처 스크립트 `start-dashboard.cmd` / `stop-dashboard.cmd` / `make-shortcuts.ps1`
+
+### Changed
+
+- **대시보드 데이터 API를 공개 읽기 전용으로 전환**: `GET /api/dashboard`·`/api/mcp-status`·`/api/projects`는 인증 없이 조회 가능(키 입력 프롬프트 제거). 쓰기(POST·MCP 도구)는 `x-api-key` 인증 유지 (commit `ddf365d`)
+
+### Removed
+
+- `DASHBOARD_AUTOFILL` 환경 플래그 — 대시보드가 공개 읽기 전용이 되어 로컬 키 자동주입이 불필요해짐 (commit `ddf365d`)
+
 ## [3.0.1] - 2026-06-13
 
 ### Fixed

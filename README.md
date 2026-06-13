@@ -23,7 +23,7 @@ Current verified runtime:
 - Discussion, consensus, and vote tracking.
 - Retrospective review and leader election.
 - Handoff, event, and file-change logging.
-- Dashboard shell plus authenticated dashboard/status APIs.
+- Public read-only dashboard shell plus dashboard, status, and per-project session snapshot APIs (writes stay key-gated). Updated 2026-06-13.
 - Tool schema contract metadata: `schema_version` and `contract_hash` on every tool.
 - Secret leak scan for docs, source, and tests.
 
@@ -85,7 +85,7 @@ Runtime configuration is split across:
 - `.dev.vars`: local secrets for Wrangler dev. This file must not be committed.
 - Cloudflare Secret `API_KEY`: production authentication secret.
 - `MCP_DEV_HUB_API_KEY`: local client-side environment variable used by MCP clients.
-- `DASHBOARD_AUTOFILL`: local-only dashboard convenience flag.
+- `DASHBOARD_AUTOFILL`: removed 2026-06-13. The dashboard is now public read-only, so no local key autofill flag is needed.
 - `DB` and `ENVIRONMENT`: Worker binding and environment variable surfaced by Wrangler.
 
 Do not print API keys in logs, docs, screenshots, or chat.
@@ -159,7 +159,7 @@ ZERO mapping:
 - `src/tools/`: MCP tool definitions, handlers, and tool tests.
 - `src/lib/`: shared MCP, auth, CORS, DB, and error helpers.
 - `src/db/`: D1 schema and query-group map.
-- `src/dashboard/`: dashboard data and HTML shell.
+- `src/dashboard/`: dashboard data, per-project session aggregation, and HTML shell.
 - `tests/helpers/`: D1 test double.
 - `docs/`: generated project documentation and traceability docs.
 - `scripts/security/`: no-secret-leak scanner.
