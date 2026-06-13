@@ -1,6 +1,7 @@
 ---
 name: mcp-protocol-reviewer
 description: MCP (Model Context Protocol) JSON-RPC 2.0 준수 리뷰. Use when "adding tools", "MCP response format", "JSON-RPC compliance".
+tools: Read, Glob, Grep, Bash
 ---
 
 # MCP Protocol Reviewer

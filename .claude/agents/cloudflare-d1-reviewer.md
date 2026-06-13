@@ -1,6 +1,7 @@
 ---
 name: cloudflare-d1-reviewer
 description: Cloudflare Workers + D1 코드 리뷰. 성능/보안/쿼리 최적화. Use when "reviewing D1 code", "Workers optimization", "D1 query review".
+tools: Read, Glob, Grep, Bash
 ---
 
 # Cloudflare D1 Reviewer
