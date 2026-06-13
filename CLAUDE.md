@@ -4,6 +4,29 @@
 > **현재 버전**: v3 (Session Lifecycle + Retro + Leader Election)
 > **지원 AI**: Codex · Claude · OpenCode Go · MiniMax
 
+## dev hub — 작업 이어받기 (트리거)
+
+사용자 메시지에 **`dev hub`** (또는 `devhub` · `dev-hub` · `데브허브` · `/dev-hub`)가 포함되면
+**즉시 아래 고정 시퀀스를 실행**한다. 추측하지 말고 그대로 따른다. (상세: `docs/dev-hub-pickup.md`)
+
+ME = `claude` (이 런타임). 다른 에이전트는 자신의 이름을 ME로 쓴다.
+
+```
+1) get_handoff  { agent: ME, status: "pending" }   # 나에게 온 인계 작업?
+2) get_dashboard                                     # 활성 세션·blocked 맥락
+3) list_tasks   { assigned_to: ME }                  # 내 할당 태스크
+```
+
+분기:
+
+- **핸드오프 있음** → `ack_handoff` → `update_state {status:"working"}` → instructions 수행 → 끝나면 `update_state {status:"done"}` (+ 다음 담당 있으면 `log_handoff`)
+- **할당 태스크만 있음** → `update_state {status:"working"}` → 계속 수행
+- **둘 다 없음** → "이어받을 작업 없음" 보고 후 멈춤 (**ZERO-T1**: 임의 작업 금지, `update_state` 호출 안 함)
+
+가드: `lock_task` 가 `locked:true`면 대기(**ZERO-T2**) · `blocked>=2`면 에스컬레이션.
+작업 중엔 **120초 안에** `update_state` 로 `progress` 갱신(미보고 시 지연→오프라인).
+dev-hub MCP 도구가 없으면 호출하지 말고 "dev-hub 미연결"이라고 보고한다.
+
 ## 패키지 관리
 
 - **항상 `npm` 사용** (Cloudflare Workers 표준)
