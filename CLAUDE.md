@@ -12,7 +12,7 @@
 
 ## 개발 순서 (TDD 권장)
 
-1. 변경 사항 작성 (`src/**/*.ts` 또는 `v3_*.ts`)
+1. 변경 사항 작성 (`src/**/*.ts`) <!-- 2026-06-13: 루트 v3_*.ts 레거시 제거됨 -->
 2. 타입체크: `npm run type-check`
 3. 테스트: `npm test`
 4. 린트: `npm run lint`
@@ -64,6 +64,8 @@ src/
 - ✅ **로깅**: `console.log` 대신 구조화된 JSON 로그
 - ❌ **하드코딩 비밀 금지**: API_KEY는 `env.API_KEY` (Cloudflare Secret)
 - ❌ **SQL Injection 방지**: 반드시 prepared statement (`.bind()`)
+- ✅ **UTF-8 경계 검증** (2026-06-13 추가): 요청 body에 `U+FFFD` 포함 시 `-32602` 거부 — 비-UTF-8(CP949 등) 손상 payload의 D1 저장 방지 (`src/index.ts`)
+- ✅ **ID 생성 규칙** (2026-06-13 추가): `nextId`는 `MAX(suffix)+1` 사용 — `COUNT(*)` 금지(행 삭제 gap 시 ID 충돌) (`src/lib/mcp.ts`)
 
 ## v3 아키텍처 — 세션 라이프사이클
 
@@ -92,9 +94,11 @@ PHASE 3: LEADER ELECTION (status = voting)
 | `get_dashboard` 후 2개 이상 `blocked`       | **ZERO-T2**: 자동 에스컬레이션      |
 | `finalize_retro` 후 `start_election` 미호출 | **ZERO-T3**: 세션 deadlock → 경고   |
 
-## v1/v2/v3 동시 운영 시 주의
+## v1/v2/v3 동시 운영 시 주의 — ⚠ 더 이상 해당 없음 (2026-06-13)
 
-루트에 `index.ts`, `v2_*.ts`, `v3_*.ts`가 공존합니다.
+> **2026-06-13 업데이트**: 레거시 v1/v2/root-v3 파일이 저장소에서 완전히 제거되었습니다(commit `c1557bb`). 현재 코드는 `src/`만 존재하므로 아래 "동시 운영" 주의사항은 더 이상 적용되지 않습니다. 이력 보존용으로 남겨둡니다(historical).
+
+루트에 `index.ts`, `v2_*.ts`, `v3_*.ts`가 공존합니다. _(과거 상태 — 현재는 모두 제거됨)_
 
 - **메인 코드**: v3 (현재 활성) — `src/`로 이관 후 작업
 - **레거시 v1/v2**: 새 기능 추가 ❌, 마이그레이션 시 참고만

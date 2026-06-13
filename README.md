@@ -4,6 +4,41 @@ Cloudflare Workers + D1 기반의 다중 AI 개발 조정용 MCP 서버입니다
 
 Codex, Cursor, Claude Code, OpenCode가 같은 `dev-hub` MCP 서버를 바라보며 세션, 태스크, 토론, 투표, 핸드오프, 파일 변경 기록을 공유합니다.
 
+## Features
+
+- **세션 라이프사이클** — active → retro → leader election → 새 세션 자동 체인
+- **태스크 조정** — 등록·할당 + TTL 잠금으로 멀티-AI 동시 작업 충돌 방지
+- **토론 & 합의** — 스레드·발언·consensus 추적, 투표 기반 의사결정
+- **회고 & 리더 선거** — AI 4인 회고 집계(MVP) 후 다음 세션 리더 선출
+- **핸드오프 & 이벤트** — AI 간 작업 인계, 브로드캐스트 이벤트·파일 변경 로그
+- **D1 SSOT** — 모든 공유 상태가 Cloudflare D1 단일 원장에 (16 테이블)
+- **31개 MCP 도구** — JSON-RPC 2.0, `x-api-key`/`Bearer` 인증, UTF-8 경계 가드
+
+## Documentation
+
+| 문서                                             | 내용                                                        |
+| ------------------------------------------------ | ----------------------------------------------------------- |
+| [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) | 시스템 구조·요청 흐름·데이터 모델(16 테이블)·세션 상태 기계 |
+| [SYSTEM_LAYOUT.md](SYSTEM_LAYOUT.md)             | 파일·폴더 배치와 각 파일 책임                               |
+| [CHANGELOG.md](CHANGELOG.md)                     | 버전별 변경 이력 (Keep a Changelog)                         |
+| [CLAUDE.md](CLAUDE.md) · [AGENTS.md](AGENTS.md)  | 개발 워크플로우·코딩 컨벤션·멀티-AI 규칙                    |
+
+## Table of Contents
+
+- [Current Deployment](#current-deployment)
+- [Local Setup](#local-setup)
+- [Deploy](#deploy)
+- [MCP Client Configuration](#mcp-client-configuration)
+- [Remote Verification](#remote-verification)
+- [Tool Inventory](#tool-inventory)
+- [Agent Workflow](#agent-workflow)
+- [MACHO-GPT ZERO Rules](#macho-gpt-zero-rules)
+- [Development Commands](#development-commands)
+- [Security Notes](#security-notes)
+- [Troubleshooting](#troubleshooting)
+
+상세 구조/배치는 위 **Documentation** 표의 전용 문서를 참조하세요 (README에는 중복 기재하지 않습니다).
+
 ## Current Deployment
 
 | 항목        | 값                                                 |
@@ -21,58 +56,11 @@ API 키는 Cloudflare Secret `API_KEY`로 관리합니다.
 
 ## Architecture
 
-```mermaid
-graph TD
-  Codex["Codex"] --> Hub["MCP DEV HUB Worker"]
-  Cursor["Cursor"] --> Hub
-  Claude["Claude Code"] --> Hub
-  OpenCode["OpenCode"] --> Hub
-  Hub --> D1["Cloudflare D1: mcp-dev-hub-db"]
-
-  D1 --> Sessions["session"]
-  D1 --> Tasks["tasks"]
-  D1 --> Discussions["discussion"]
-  D1 --> Votes["vote/election"]
-  D1 --> Handoffs["handoff_log"]
-  D1 --> Events["event_log"]
-  D1 --> Files["file_changes"]
-```
+요청 흐름·계층 구조·데이터 모델(16 테이블)·세션 상태 기계는 **[SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md)** 참조.
 
 ## Project Layout
 
-```text
-src/
-  index.ts                 # Worker entrypoint and MCP JSON-RPC router
-  lib/
-    auth.ts                # API key auth wrapper
-    cors.ts                # CORS wrapper
-    db.ts                  # DB helper exports
-    errors.ts              # JSON-RPC error exports
-    mcp.ts                 # MCP types and shared helpers
-  db/
-    schema.sql             # D1 schema
-    queries.ts             # SQL query module placeholder
-  tools/
-    dashboard.ts           # get_dashboard
-    session.ts             # start/get/close session
-    retro.ts               # submit/get/finalize retro
-    election.ts            # leader election
-    state.ts               # agent state
-    task.ts                # task registry
-    discussion.ts          # discussion and consensus
-    vote.ts                # vote workflow
-    handoff.ts             # handoff workflow
-    lock.ts                # task locks
-    file.ts                # file change record
-    event.ts               # broadcast and event log
-tests/
-  helpers/d1Mock.ts        # D1 test double
-docs/traceability/
-  tool-inventory-v3.md     # v3 tool inventory
-```
-
-Legacy v1/v2/root v3 files were moved under `_legacy/`.
-The active Worker entrypoint is `src/index.ts`.
+파일·폴더 배치와 각 파일의 책임은 **[SYSTEM_LAYOUT.md](SYSTEM_LAYOUT.md)** 참조. 활성 엔트리포인트는 `src/index.ts`이며, 레거시 v1/v2/root-v3는 2026-06-13 완전히 제거되었습니다.
 
 ## Local Setup
 

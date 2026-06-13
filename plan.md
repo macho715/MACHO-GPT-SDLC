@@ -72,7 +72,7 @@ src/
 - [ ] `npm run type-check` 0 errors
 - [ ] `npm test` 5개 모듈 통과 (커버리지 60%+, 핵심 경로 100%)
 - [ ] `npm run lint` 0 errors
-- [ ] 루트 레거시 파일 `_legacy/`로 이동 (삭제 X)
+- [x] 루트 레거시 파일 `_legacy/`로 이동 → 이후 완전 제거 ✅ Done (2026-06-13, commit `c1557bb`)
 - [ ] wrangler.toml / package.json 업데이트
 
 ## 범위 제외 (Out of Scope)
