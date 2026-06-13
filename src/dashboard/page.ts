@@ -142,6 +142,10 @@ export function renderDashboardPage(): string {
   .timeline { display: flex; gap: 6px; flex-wrap: wrap; }
   .stage { flex: 1; min-width: 70px; text-align: center; padding: 8px 4px; border-radius: 8px; font-size: 12px; font-family: var(--mono); background: var(--muted); border: 1px solid var(--border); color: var(--fg-dim); }
   .stage.active { background: rgba(34,197,94,.14); border-color: var(--accent); color: var(--accent); }
+  /* folder chip in the active-session header — shows which local folder the session runs in */
+  .folder-chip { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px; font-family: var(--mono); font-size: 11px; font-weight: 600; background: rgba(34,197,94,.12); border: 1px solid var(--accent); color: var(--accent); max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .folder-chip svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; flex: none; }
+  .folder-chip.none { background: var(--muted); border-color: var(--border); color: var(--fg-dim); font-weight: 500; }
 
   /* project → session tree (grouped by local folder) */
   .proj-section { margin-top: 16px; }
@@ -265,6 +269,19 @@ export function renderDashboardPage(): string {
     if (sec < 3600) return Math.floor(sec / 60) + 'm';
     return Math.floor(sec / 3600) + 'h';
   }
+  // 로컬 경로 → 폴더명(basename). 세션이 어느 폴더에서 도는지 헤더에 표시한다.
+  // 백슬래시 리터럴은 외부 템플릿 리터럴 이스케이프를 피하려 fromCharCode(92)로 만든다.
+  var BACKSLASH = String.fromCharCode(92);
+  function folderName(p) {
+    if (!p) return '';
+    var s = String(p);
+    while (s.length > 1) {
+      var last = s.charAt(s.length - 1);
+      if (last === '/' || last === BACKSLASH) { s = s.slice(0, -1); } else { break; }
+    }
+    var cut = Math.max(s.lastIndexOf('/'), s.lastIndexOf(BACKSLASH));
+    return cut >= 0 ? s.slice(cut + 1) : s;
+  }
   // presence 코드 → 한글 라벨. unknown은 "미연결"(한 번도 heartbeat 없음)로,
   // offline(연결됐다 끊김)과 구분해 빨강 오해를 막는다.
   var PRESENCE_LABEL = { online: '온라인', stale: '지연', offline: '오프라인', unknown: '미연결' };
@@ -368,7 +385,13 @@ export function renderDashboardPage(): string {
     var cur = d.active_session ? d.active_session.status : null;
     var sb = '';
     if (d.active_session) {
-      sb += '<div class="row" style="margin-bottom:10px"><span class="name num">' + esc(d.active_session.id || '')
+      var proj = d.active_session.project;
+      var folder = folderName(proj);
+      var folderHtml = folder
+        ? '<span class="folder-chip" title="' + esc(proj) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>' + esc(folder) + '</span> '
+        : '<span class="folder-chip none">폴더 미지정</span> ';
+      sb += '<div class="row" style="margin-bottom:10px;gap:8px;flex-wrap:wrap">' + folderHtml
+        + '<span class="name num">' + esc(d.active_session.id || '')
         + '</span><span class="muted-text">' + esc(d.active_session.title || '') + '</span></div>';
     } else {
       sb += '<div class="empty" style="margin-bottom:10px">' + svg('dash') + '활성 세션 없음</div>';
