@@ -2,6 +2,8 @@
  * MCP DEV HUB v3 - Cloudflare Worker
  * Session Lifecycle + Retro + Leader Election
  */
+import { buildDashboardData, buildMcpStatus } from './dashboard/data';
+import { renderDashboardPage } from './dashboard/page';
 import { auth } from './lib/auth';
 import { cors } from './lib/cors';
 import { jsonRpcError } from './lib/errors';
@@ -40,13 +42,46 @@ export default {
       return new Response(null, { headers: cors() });
     }
 
-    if (request.method === 'GET' && new URL(request.url).pathname === '/health') {
-      return jsonResponse({
-        status: 'ok',
-        server: serverInfo.name,
-        version: serverInfo.version,
-        features,
-      });
+    if (request.method === 'GET') {
+      const path = new URL(request.url).pathname;
+
+      if (path === '/health') {
+        return jsonResponse({
+          status: 'ok',
+          server: serverInfo.name,
+          version: serverInfo.version,
+          features,
+        });
+      }
+
+      // Dashboard shell is public (read-only HTML with no embedded data).
+      // The live data it fetches is gated below by the same API_KEY auth.
+      if (path === '/dashboard') {
+        return new Response(renderDashboardPage(), {
+          headers: { ...cors(), 'Content-Type': 'text/html; charset=utf-8' },
+        });
+      }
+
+      if (path === '/api/dashboard' || path === '/api/mcp-status') {
+        if (!auth(request, env)) {
+          return jsonResponse({ error: 'Unauthorized' }, { status: 401 });
+        }
+        try {
+          const data =
+            path === '/api/dashboard'
+              ? await buildDashboardData(env.DB)
+              : await buildMcpStatus(env.DB, {
+                  server: serverInfo.name,
+                  version: serverInfo.version,
+                  features,
+                  toolCount: tools.length,
+                });
+          return jsonResponse(data);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Internal error';
+          return jsonResponse({ error: message }, { status: 500 });
+        }
+      }
     }
 
     if (request.method !== 'POST') {

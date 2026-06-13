@@ -28,6 +28,47 @@ describe('worker entrypoint', () => {
     });
   });
 
+  it('serves the dashboard shell as HTML without auth', async () => {
+    const response = await worker.fetch(new Request('http://localhost/dashboard'), env);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toContain('text/html');
+    const body = await response.text();
+    expect(body).toContain('MCP Dev Hub');
+    expect(body).toContain('mcp_api_key');
+  });
+
+  it('rejects /api/dashboard and /api/mcp-status without a key', async () => {
+    const d = await worker.fetch(new Request('http://localhost/api/dashboard'), env);
+    expect(d.status).toBe(401);
+    const s = await worker.fetch(new Request('http://localhost/api/mcp-status'), env);
+    expect(s.status).toBe(401);
+  });
+
+  it('serves /api/dashboard JSON with a valid key', async () => {
+    const req = new Request('http://localhost/api/dashboard', {
+      headers: { 'x-api-key': 'test-key' },
+    });
+    const response = await worker.fetch(req, env);
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({ agents: [], active_session: null });
+  });
+
+  it('serves /api/mcp-status JSON with server meta and zero flags', async () => {
+    const req = new Request('http://localhost/api/mcp-status', {
+      headers: { 'x-api-key': 'test-key' },
+    });
+    const response = await worker.fetch(req, env);
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as {
+      server: string;
+      tool_count: number;
+      zero_flags: { blocked_escalation: boolean; handoff_pending: boolean };
+    };
+    expect(payload.server).toBe('mcp-dev-hub');
+    expect(payload.tool_count).toBe(31);
+    expect(payload.zero_flags.blocked_escalation).toBe(false);
+  });
+
   it('handles CORS preflight', async () => {
     const response = await worker.fetch(
       new Request('http://localhost/', { method: 'OPTIONS' }),
