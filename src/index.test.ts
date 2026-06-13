@@ -66,6 +66,49 @@ describe('worker entrypoint', () => {
     expect(payload.result.tools).toHaveLength(31);
   });
 
+  it('rejects requests whose body contains U+FFFD (invalid UTF-8)', async () => {
+    const response = await worker.fetch(
+      post({
+        jsonrpc: '2.0',
+        id: 8,
+        method: 'tools/call',
+        params: {
+          name: 'broadcast_event',
+          arguments: {
+            event_type: 'info',
+            agent: 'codex',
+            message: 'MCP v3 �� 테스트 완료',
+          },
+        },
+      }),
+      env
+    );
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({ error: { code: -32602 } });
+  });
+
+  it('accepts clean Korean payloads (regression for UTF-8 guard)', async () => {
+    const response = await worker.fetch(
+      post({
+        jsonrpc: '2.0',
+        id: 9,
+        method: 'tools/call',
+        params: {
+          name: 'broadcast_event',
+          arguments: {
+            event_type: 'info',
+            agent: 'codex',
+            message: 'MCP v3 통합 테스트 완료',
+          },
+        },
+      }),
+      env
+    );
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as { error?: unknown };
+    expect(payload.error).toBeUndefined();
+  });
+
   it('handles MCP ping and initialized notifications', async () => {
     const pinged = await worker.fetch(post({ jsonrpc: '2.0', id: 7, method: 'ping' }), env);
     await expect(pinged.json()).resolves.toEqual({

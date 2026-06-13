@@ -59,7 +59,16 @@ export default {
 
     let body: MCPRequest;
     try {
-      body = await request.json<MCPRequest>();
+      const raw = await request.text();
+      // 경계 검증: U+FFFD(치환문자)는 비-UTF-8 body가 디코딩 손실된 신호.
+      // 손상된 payload가 D1에 영구 저장되기 전에 쓰기 시점에서 거부한다.
+      if (raw.includes('�')) {
+        return jsonResponse(
+          jsonRpcError(null, -32602, 'Invalid UTF-8 in request body. Send body encoded as UTF-8.'),
+          { status: 400 }
+        );
+      }
+      body = JSON.parse(raw) as MCPRequest;
     } catch {
       return jsonResponse(jsonRpcError(null, -32700, 'Parse error'), { status: 400 });
     }
