@@ -265,6 +265,10 @@ export function renderDashboardPage(): string {
     if (sec < 3600) return Math.floor(sec / 60) + 'm';
     return Math.floor(sec / 3600) + 'h';
   }
+  // presence 코드 → 한글 라벨. unknown은 "미연결"(한 번도 heartbeat 없음)로,
+  // offline(연결됐다 끊김)과 구분해 빨강 오해를 막는다.
+  var PRESENCE_LABEL = { online: '온라인', stale: '지연', offline: '오프라인', unknown: '미연결' };
+  function presenceLabel(p) { return PRESENCE_LABEL[p] || p; }
 
   function setPill(node, text, cls) {
     node.textContent = text;
@@ -333,7 +337,7 @@ export function renderDashboardPage(): string {
           + '<span class="dot ' + p + '" aria-hidden="true"></span>'
           + '<div><div class="name">' + esc(a.agent) + '</div>'
           + '<div class="sub">' + esc(a.status) + ' · ' + task + '</div></div>'
-          + '<div style="text-align:right"><div class="presence ' + p + '">' + p + '</div>'
+          + '<div style="text-align:right"><div class="presence ' + p + '">' + presenceLabel(p) + '</div>'
           + '<div class="sub num">' + ago(a.age_sec) + ' · ' + prog + '%</div></div>'
           + '<div class="bar-track"><div class="bar-fill" style="width:' + prog + '%"></div></div>'
           + '</div>';

@@ -199,7 +199,11 @@ CREATE TABLE IF NOT EXISTS election_ballot (
 );
 
 -- 초기 에이전트 등록
-INSERT OR IGNORE INTO ai_state (agent, status) VALUES ('codex',    'idle');
-INSERT OR IGNORE INTO ai_state (agent, status) VALUES ('claude',   'idle');
-INSERT OR IGNORE INTO ai_state (agent, status) VALUES ('opencode', 'idle');
-INSERT OR IGNORE INTO ai_state (agent, status) VALUES ('minimax',  'idle');
+-- updated_at은 NULL로 둔다: seed 직후 datetime('now')를 박으면 10분 뒤 presence가
+-- offline(빨강)으로 보여 "한 번도 연결 안 함"과 "연결됐다 끊김"이 구분되지 않는다.
+-- NULL이면 derivePresence가 'unknown'(회색·미연결)을 반환하고, 첫 update_state
+-- 호출 시 updated_at이 채워지며 online으로 전환된다.
+INSERT OR IGNORE INTO ai_state (agent, status, updated_at) VALUES ('codex',    'idle', NULL);
+INSERT OR IGNORE INTO ai_state (agent, status, updated_at) VALUES ('claude',   'idle', NULL);
+INSERT OR IGNORE INTO ai_state (agent, status, updated_at) VALUES ('opencode', 'idle', NULL);
+INSERT OR IGNORE INTO ai_state (agent, status, updated_at) VALUES ('minimax',  'idle', NULL);
