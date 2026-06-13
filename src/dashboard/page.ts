@@ -127,6 +127,24 @@ export function renderDashboardPage(defaultKey = ''): string {
   .stage { flex: 1; min-width: 70px; text-align: center; padding: 8px 4px; border-radius: 8px; font-size: 12px; font-family: var(--mono); background: var(--muted); border: 1px solid var(--border); color: var(--fg-dim); }
   .stage.active { background: rgba(34,197,94,.14); border-color: var(--accent); color: var(--accent); }
 
+  /* project → session tree (grouped by local folder) */
+  .proj-section { margin-top: 16px; }
+  .proj-list { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+  .proj { background: var(--muted); border: 1px solid var(--border); border-radius: 10px; padding: 12px; min-width: 0; }
+  .proj-head { display: flex; align-items: center; gap: 8px; }
+  .proj-head svg { width: 16px; height: 16px; stroke: var(--fg-dim); }
+  .proj-name { font-family: var(--mono); font-weight: 600; font-size: 14px; }
+  .proj-meta { margin-left: auto; font-size: 11px; font-family: var(--mono); color: var(--fg-dim); white-space: nowrap; }
+  .proj-path { font-size: 11px; color: var(--fg-dim); font-family: var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 4px 0 10px 24px; }
+  .proj-sessions { display: grid; gap: 6px; }
+  .sess { display: flex; align-items: center; gap: 8px; padding: 7px 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+  .sess .sid { font-family: var(--mono); font-size: 11px; color: var(--fg-dim); flex: none; }
+  .sess .stitle { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .st { font-family: var(--mono); font-size: 11px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--fg-dim); flex: none; }
+  .st.active { color: var(--accent); border-color: var(--accent); }
+  .st.retro, .st.voting, .st.closing { color: var(--warn); border-color: var(--warn); }
+  .st.closed { color: var(--fg-dim); }
+
   /* key overlay */
   .overlay { position: fixed; inset: 0; background: rgba(2,6,23,.85); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
   .overlay.show { display: flex; }
@@ -195,6 +213,11 @@ export function renderDashboardPage(defaultKey = ''): string {
         <ul id="events" class="list"><li class="skel skel-line"></li><li class="skel skel-line"></li></ul>
       </section>
     </div>
+
+    <section class="panel proj-section" aria-labelledby="h-proj">
+      <h2 id="h-proj">프로젝트별 세션 <span id="projectsCount" class="count num">0</span></h2>
+      <div id="projects" class="proj-list"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
+    </section>
 
     <footer>D1 SSOT · 5초 polling · 인증된 /api 경로에서만 데이터 fetch</footer>
   </div>
@@ -270,6 +293,7 @@ export function renderDashboardPage(defaultKey = ''): string {
     try {
       var sRes = await fetch('/api/mcp-status', { headers: headers });
       var dRes = await fetch('/api/dashboard', { headers: headers });
+      var pRes = await fetch('/api/projects', { headers: headers });
       if (sRes.status === 401 || dRes.status === 401) {
         showOverlay('인증 실패 — 키를 확인하세요.');
         return;
@@ -284,6 +308,8 @@ export function renderDashboardPage(defaultKey = ''): string {
       var data = await dRes.json();
       renderStatus(status);
       renderDashboard(data);
+      // Projects panel is supplementary — a failure here must not blank the dashboard.
+      if (pRes.ok) { renderProjects(await pRes.json()); }
       failures = 0;
       setConn(true);
       el('updated').innerHTML = '<span class="num">갱신 ' + new Date().toLocaleTimeString() + '</span>';
@@ -400,7 +426,47 @@ export function renderDashboardPage(defaultKey = ''): string {
     }).join('') : emptyLi('없음');
   }
 
+  function renderProjects(p) {
+    var groups = (p && p.projects) || [];
+    el('projectsCount').textContent = p && p.project_count != null ? p.project_count : groups.length;
+    if (!groups.length) {
+      el('projects').innerHTML = emptyBox('세션 없음 — start_session 호출 시 project 인자로 로컬 폴더 경로를 전달하세요');
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < groups.length; i++) {
+      var g = groups[i];
+      var sess = g.sessions || [];
+      var rows = '';
+      for (var j = 0; j < sess.length; j++) {
+        var s = sess[j];
+        var st = String(s.status || '');
+        rows += '<div class="sess">'
+          + '<span class="sid">' + esc(s.id) + '</span>'
+          + '<span class="stitle">' + esc(s.title) + '</span>'
+          + '<span class="tag">' + esc(s.leader) + '</span>'
+          + '<span class="st ' + esc(st) + '">' + esc(st) + '</span>'
+          + '</div>';
+      }
+      var pathLine = g.project
+        ? '<div class="proj-path" title="' + esc(g.project) + '">' + esc(g.project) + '</div>'
+        : '';
+      html += '<div class="proj">'
+        + '<div class="proj-head">' + svg('folder')
+        + '<span class="proj-name">' + esc(g.name) + '</span>'
+        + '<span class="proj-meta">활성 ' + (Number(g.active) || 0) + ' / 전체 ' + (Number(g.total) || 0) + '</span>'
+        + '</div>'
+        + pathLine
+        + '<div class="proj-sessions">' + rows + '</div>'
+        + '</div>';
+    }
+    el('projects').innerHTML = html;
+  }
+
   function svg(name) {
+    if (name === 'folder') {
+      return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>';
+    }
     if (name === 'alert') {
       return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>';
     }

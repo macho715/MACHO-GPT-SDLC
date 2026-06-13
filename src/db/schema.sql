@@ -142,10 +142,12 @@ CREATE TABLE IF NOT EXISTS session (
   leader       TEXT NOT NULL,           -- 세션 리더 AI
   status       TEXT DEFAULT 'active',   -- active | closing | retro | voting | closed
   goals        TEXT DEFAULT '[]',       -- JSON array: 세션 목표
+  project      TEXT,                    -- 세션이 속한 로컬 폴더 경로 (대시보드 프로젝트별 그룹핑용)
   created_at   DATETIME DEFAULT (datetime('now')),
   closed_at    DATETIME,
   next_session_id TEXT                  -- 다음 세션 연결
 );
+CREATE INDEX IF NOT EXISTS idx_session_project ON session(project);
 
 -- 13. ★ 회고 리뷰 (AI별 잘된점/못된점 기록)
 CREATE TABLE IF NOT EXISTS retro_review (

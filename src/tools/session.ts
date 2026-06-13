@@ -22,6 +22,11 @@ export const sessionTools = [
           description: '세션 리더 AI',
         },
         goals: { type: 'array', items: { type: 'string' }, description: '세션 목표 목록' },
+        project: {
+          type: 'string',
+          description:
+            '세션이 속한 로컬 폴더 경로 (대시보드에서 프로젝트별로 그룹핑됨). 호출 AI의 작업 디렉터리를 전달하세요.',
+        },
       },
     },
     annotations: { readOnlyHint: false },
@@ -59,11 +64,13 @@ export async function startSession(
 ): Promise<ToolResult> {
   const { title, leader } = args as Record<string, string>;
   const goals = JSON.stringify(args.goals ?? []);
+  const project =
+    typeof args.project === 'string' && args.project.trim() ? args.project.trim() : null;
   const id = await nextId(db, 'session', 'SESS');
 
   await db
-    .prepare(`INSERT INTO session (id,title,leader,goals) VALUES (?,?,?,?)`)
-    .bind(id, title, leader, goals)
+    .prepare(`INSERT INTO session (id,title,leader,goals,project) VALUES (?,?,?,?,?)`)
+    .bind(id, title, leader, goals, project)
     .run();
 
   // 리더 상태 working으로
@@ -84,6 +91,7 @@ export async function startSession(
     session_id: id,
     title,
     leader,
+    project,
     message: `세션 ${id} 시작. 리더: ${leader}`,
   });
 }

@@ -66,6 +66,24 @@ describe('worker entrypoint', () => {
     await expect(response.json()).resolves.toMatchObject({ agents: [], active_session: null });
   });
 
+  it('rejects /api/projects without a key', async () => {
+    const response = await worker.fetch(new Request('http://localhost/api/projects'), env);
+    expect(response.status).toBe(401);
+  });
+
+  it('serves /api/projects JSON with a valid key', async () => {
+    const req = new Request('http://localhost/api/projects', {
+      headers: { 'x-api-key': '<API_KEY>' },
+    });
+    const response = await worker.fetch(req, env);
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      projects: [],
+      total_sessions: 0,
+      project_count: 0,
+    });
+  });
+
   it('serves /api/mcp-status JSON with server meta and zero flags', async () => {
     const req = new Request('http://localhost/api/mcp-status', {
       headers: { 'x-api-key': '<API_KEY>' },

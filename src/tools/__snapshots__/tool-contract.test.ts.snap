@@ -38,7 +38,7 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
-    "contract_hash": "fnv1a32:8b295f97",
+    "contract_hash": "fnv1a32:ac942fea",
     "inputSchema": {
       "properties": {
         "goals": {
@@ -56,6 +56,10 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
             "opencode",
             "minimax",
           ],
+          "type": "string",
+        },
+        "project": {
+          "description": "세션이 속한 로컬 폴더 경로 (대시보드에서 프로젝트별로 그룹핑됨). 호출 AI의 작업 디렉터리를 전달하세요.",
           "type": "string",
         },
         "title": {

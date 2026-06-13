@@ -4,6 +4,7 @@
  */
 import { buildDashboardData, buildMcpStatus } from './dashboard/data';
 import { renderDashboardPage } from './dashboard/page';
+import { buildProjectSessions } from './dashboard/projects';
 import { auth } from './lib/auth';
 import { cors } from './lib/cors';
 import { jsonRpcError } from './lib/errors';
@@ -66,20 +67,24 @@ export default {
         });
       }
 
-      if (path === '/api/dashboard' || path === '/api/mcp-status') {
+      if (path === '/api/dashboard' || path === '/api/mcp-status' || path === '/api/projects') {
         if (!auth(request, env)) {
           return jsonResponse({ error: 'Unauthorized' }, { status: 401 });
         }
         try {
-          const data =
-            path === '/api/dashboard'
-              ? await buildDashboardData(env.DB)
-              : await buildMcpStatus(env.DB, {
-                  server: serverInfo.name,
-                  version: serverInfo.version,
-                  features,
-                  toolCount: tools.length,
-                });
+          let data: unknown;
+          if (path === '/api/dashboard') {
+            data = await buildDashboardData(env.DB);
+          } else if (path === '/api/projects') {
+            data = await buildProjectSessions(env.DB);
+          } else {
+            data = await buildMcpStatus(env.DB, {
+              server: serverInfo.name,
+              version: serverInfo.version,
+              features,
+              toolCount: tools.length,
+            });
+          }
           return jsonResponse(data);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Internal error';
