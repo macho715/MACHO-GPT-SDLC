@@ -2,6 +2,9 @@ export interface Env {
   DB: D1Database;
   API_KEY: string;
   ENVIRONMENT?: string;
+  // Local-only flag (set in .dev.vars). When '1', the /dashboard route injects
+  // API_KEY so local dev auto-connects. Absent in deployed environments.
+  DASHBOARD_AUTOFILL?: string;
 }
 
 export interface MCPRequest {

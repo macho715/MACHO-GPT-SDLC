@@ -37,6 +37,19 @@ describe('worker entrypoint', () => {
     expect(body).toContain('mcp_api_key');
   });
 
+  it('injects the API_KEY default only when DASHBOARD_AUTOFILL=1', async () => {
+    const autofill = await worker.fetch(new Request('http://localhost/dashboard'), {
+      ...env,
+      DASHBOARD_AUTOFILL: '1',
+    });
+    expect(await autofill.text()).toContain('test-key');
+
+    const plain = await worker.fetch(new Request('http://localhost/dashboard'), env);
+    const body = await plain.text();
+    expect(body).not.toContain('test-key');
+    expect(body).toContain('DEFAULT_KEY = ""');
+  });
+
   it('rejects /api/dashboard and /api/mcp-status without a key', async () => {
     const d = await worker.fetch(new Request('http://localhost/api/dashboard'), env);
     expect(d.status).toBe(401);

@@ -56,8 +56,12 @@ export default {
 
       // Dashboard shell is public (read-only HTML with no embedded data).
       // The live data it fetches is gated below by the same API_KEY auth.
+      // Auto-fill the key ONLY when DASHBOARD_AUTOFILL=1, which lives in
+      // .dev.vars (loaded by `wrangler dev`, never shipped by `wrangler deploy`).
+      // A deployed worker has no such flag, so the public page never leaks a key.
       if (path === '/dashboard') {
-        return new Response(renderDashboardPage(), {
+        const defaultKey = env.DASHBOARD_AUTOFILL === '1' ? (env.API_KEY ?? '') : '';
+        return new Response(renderDashboardPage(defaultKey), {
           headers: { ...cors(), 'Content-Type': 'text/html; charset=utf-8' },
         });
       }

@@ -11,7 +11,7 @@
  * avoids backticks / template-literal syntax so it can live inside this outer
  * template literal without escaping.
  */
-export function renderDashboardPage(): string {
+export function renderDashboardPage(defaultKey = ''): string {
   return `<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -201,8 +201,12 @@ export function renderDashboardPage(): string {
 (function () {
   'use strict';
   var KEY_NAME = 'mcp_api_key';
+  // Injected by the server only outside production (see index.ts) so a public
+  // prod /dashboard never ships a secret. In dev it auto-fills the key.
+  var DEFAULT_KEY = ${JSON.stringify(defaultKey)};
   var apiKey = '';
   try { apiKey = localStorage.getItem(KEY_NAME) || ''; } catch (e) { apiKey = ''; }
+  if (!apiKey) { apiKey = DEFAULT_KEY; }
   var timer = null;
   var auto = true;
 
