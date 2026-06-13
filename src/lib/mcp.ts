@@ -66,6 +66,10 @@ export async function nextId(db: D1Database, table: string, prefix: string): Pro
     throw new Error(`Unsupported id table: ${table}`);
   }
 
-  const row = await db.prepare(`SELECT COUNT(*) as c FROM ${table}`).first<{ c: number }>();
-  return `${prefix}-${String((row?.c ?? 0) + 1).padStart(3, '0')}`;
+  // MAX(suffix)+1 — COUNT(*) regenerates an existing id after a middle row is
+  // deleted (gap), causing a UNIQUE constraint collision. MAX is gap-safe.
+  const row = await db
+    .prepare(`SELECT MAX(CAST(SUBSTR(id, INSTR(id, '-') + 1) AS INTEGER)) AS m FROM ${table}`)
+    .first<{ m: number | null }>();
+  return `${prefix}-${String((row?.m ?? 0) + 1).padStart(3, '0')}`;
 }
