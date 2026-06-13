@@ -47,3 +47,4 @@ secrets/
 .claude/settings.local.json
 .codex/
 out/
+graphify-out/
