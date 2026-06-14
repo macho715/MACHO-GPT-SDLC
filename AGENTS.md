@@ -27,6 +27,29 @@ ME = 자신의 이름(`codex` | `claude` | `opencode` | `hermes`).
 작업 중엔 **120초 안에** `update_state` 로 `progress` 갱신(미보고 시 지연→오프라인).
 dev-hub MCP 도구가 없으면 호출하지 말고 "dev-hub 미연결"이라고 보고한다.
 
+## dev hub — 새 세션 시작 의도
+
+사용자가 에이전트 대화에서 새 작업 세션을 시작하거나 대시보드의 활성 세션을 새로 지정하라는 의도를 보이면
+`start_session` 도구로 새 dev-hub 세션을 만든다.
+
+의도 판정은 특정 문구 하나에 하드코딩하지 않는다.
+한국어, 영어, 혼합 표현을 모두 의미 기준으로 해석한다.
+예를 들어 "새로운 세션 시작해", "새 세션 열어", "다음 세션으로 시작", "start new session",
+"begin a new session", "make codex the new session lead"처럼 표현이 달라도
+새 active session 생성 또는 전환을 요구하면 같은 규칙을 적용한다.
+
+실행 규칙:
+
+- 세션 생성/시작 도구는 `start_session`을 우선 사용한다.
+- `create_session`이라는 별도 도구가 없으면 실패로 보지 말고 `start_session`을 사용한다.
+- 사용자가 리더를 지정하면 그 값을 `leader`에 넣는다.
+- 리더가 없으면 현재 에이전트 이름(ME)을 리더로 사용한다.
+- 사용자가 제목이나 목표를 주면 `title`과 `goals`에 반영한다.
+- 제목이 없으면 요청 내용을 짧게 요약해 세션 제목으로 쓴다.
+- `project`에는 현재 작업 디렉터리를 넣는다.
+- 호출 후 `get_dashboard` 또는 `get_session`으로 active session이 새 세션인지 확인한다.
+- 확인 전에는 세션 전환을 DONE으로 보고하지 않는다.
+
 ## 패키지 관리
 
 - **항상 `npm` 사용** (Cloudflare Workers 표준)

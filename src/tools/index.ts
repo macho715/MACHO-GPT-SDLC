@@ -5,6 +5,7 @@ import { electionHandlers, electionTools } from './election';
 import { stateHandlers, stateTools } from './state';
 import { taskHandlers, taskTools } from './task';
 import { discussionHandlers, discussionTools } from './discussion';
+import { deliberationHandlers, deliberationTools } from './deliberation';
 import { voteHandlers, voteTools } from './vote';
 import { handoffHandlers, handoffTools } from './handoff';
 import { lockHandlers, lockTools } from './lock';
@@ -24,6 +25,7 @@ export const tools = withToolContracts([
   ...stateTools,
   ...taskTools,
   ...discussionTools,
+  ...deliberationTools,
   ...voteTools,
   ...handoffTools,
   ...lockTools,
@@ -43,6 +45,7 @@ const handlers: Record<string, ToolHandler> = {
   ...stateHandlers,
   ...taskHandlers,
   ...discussionHandlers,
+  ...deliberationHandlers,
   ...voteHandlers,
   ...handoffHandlers,
   ...lockHandlers,

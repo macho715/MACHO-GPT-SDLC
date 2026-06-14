@@ -145,6 +145,139 @@ describe('coordination tools', () => {
     );
   });
 
+  it('runs deliberation opened and waiting flow', async () => {
+    const db = createD1Mock((sql, _args, operation) => {
+      if (operation === 'first' && sql.includes('MAX(CAST')) {
+        return { m: 0 };
+      }
+
+      if (operation === 'first' && sql.includes('SELECT * FROM discussion_thread')) {
+        return { id: 'DISC-001', title: 'Best path', session_id: 'SESS-001' };
+      }
+
+      if (operation === 'all' && sql.includes('SELECT agent,role,content')) {
+        return {
+          results: [
+            { agent: 'codex', role: 'propose', content: 'Pick best path' },
+            { agent: 'claude', role: 'agree', content: 'Agree' },
+          ],
+        };
+      }
+
+      return operation === 'all' ? { results: [] } : { success: true, meta: { last_row_id: 7 } };
+    });
+
+    expect(
+      parseToolResult(
+        await handleTool(
+          'run_deliberation',
+          {
+            task_id: 'TASK-001',
+            session_id: 'SESS-001',
+            title: 'Best path',
+            question: 'Pick best path',
+            participants: ['codex', 'claude', 'opencode'],
+            initiated_by: 'codex',
+          },
+          db
+        )
+      ).status
+    ).toBe('opened');
+
+    const waiting = parseToolResult(
+      await handleTool(
+        'run_deliberation',
+        {
+          thread_id: 'DISC-001',
+          question: 'Pick best path',
+          participants: ['codex', 'claude', 'opencode'],
+          initiated_by: 'codex',
+        },
+        db
+      )
+    );
+    expect(waiting.status).toBe('waiting_for_responses');
+    expect(waiting.required_responses).toEqual(['opencode']);
+  });
+
+  it('closes deliberation when consensus threshold is reached', async () => {
+    const db = createD1Mock((sql, _args, operation) => {
+      if (operation === 'first' && sql.includes('SELECT * FROM discussion_thread')) {
+        return { id: 'DISC-001', title: 'Best path', session_id: 'SESS-001' };
+      }
+
+      if (operation === 'all' && sql.includes('SELECT agent,role,content')) {
+        return {
+          results: [
+            { agent: 'codex', role: 'agree', content: 'Agree' },
+            { agent: 'claude', role: 'agree', content: 'Agree' },
+            { agent: 'opencode', role: 'decide', content: 'Decide' },
+          ],
+        };
+      }
+
+      return operation === 'all' ? { results: [] } : { success: true, meta: { last_row_id: 8 } };
+    });
+
+    const result = parseToolResult(
+      await handleTool(
+        'run_deliberation',
+        {
+          thread_id: 'DISC-001',
+          question: 'Pick best path',
+          participants: ['codex', 'claude', 'opencode'],
+          initiated_by: 'codex',
+          consensus_threshold: 0.75,
+          consensus_summary: 'Proceed with A',
+          action_items: ['implement A'],
+        },
+        db
+      )
+    );
+
+    expect(result.status).toBe('consensus_reached');
+    expect(result.summary).toBe('Proceed with A');
+  });
+
+  it('creates a vote when deliberation is split and requested', async () => {
+    const db = createD1Mock((sql, _args, operation) => {
+      if (operation === 'first' && sql.includes('SELECT * FROM discussion_thread')) {
+        return { id: 'DISC-001', title: 'Best path', session_id: 'SESS-001' };
+      }
+
+      if (operation === 'all' && sql.includes('SELECT agent,role,content')) {
+        return {
+          results: [
+            { agent: 'codex', role: 'agree', content: 'A' },
+            { agent: 'claude', role: 'disagree', content: 'B' },
+            { agent: 'opencode', role: 'question', content: 'Need more proof' },
+          ],
+        };
+      }
+
+      return operation === 'all' ? { results: [] } : { success: true, meta: { last_row_id: 9 } };
+    });
+
+    const result = parseToolResult(
+      await handleTool(
+        'run_deliberation',
+        {
+          thread_id: 'DISC-001',
+          question: 'Pick best path',
+          participants: ['codex', 'claude', 'opencode'],
+          initiated_by: 'codex',
+          strategy: 'vote_if_split',
+          create_vote: true,
+          vote_options: ['A', 'B'],
+        },
+        db
+      )
+    );
+
+    expect(result.status).toBe('vote_created');
+    expect(result.vote_id).toBe(9);
+  });
+
   it('runs handoff, lock, file, and event tools smoke flow', async () => {
     const db = createD1Mock((sql, _args, operation) => {
       if (operation === 'first' && sql.includes('SELECT locked_by')) {

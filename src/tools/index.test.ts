@@ -25,6 +25,7 @@ const baselineToolNames = [
   'get_discussion',
   'close_discussion',
   'check_consensus',
+  'run_deliberation',
   'create_vote',
   'cast_vote',
   'get_vote_result',
@@ -45,7 +46,7 @@ const baselineToolNames = [
 describe('tool registry', () => {
   it('preserves the v3 tool inventory', () => {
     expect(tools.map((tool) => tool.name)).toEqual(baselineToolNames);
-    expect(tools).toHaveLength(36);
+    expect(tools).toHaveLength(37);
   });
 
   it('exposes contract metadata on every registered tool', () => {

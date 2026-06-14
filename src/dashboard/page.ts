@@ -163,15 +163,15 @@ export function renderDashboardPage(): string {
 
   /* project → session tree (grouped by local folder) */
   .proj-section { margin-top: 16px; }
-  .proj-list { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+  .proj-list { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); }
   .proj { background: var(--muted); border: 1px solid var(--border); border-radius: 10px; padding: 12px; min-width: 0; }
-  .proj-head { display: flex; align-items: center; gap: 8px; }
+  .proj-head { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .proj-head svg { width: 16px; height: 16px; stroke: var(--fg-dim); }
-  .proj-name { font-family: var(--mono); font-weight: 600; font-size: 14px; }
-  .proj-meta { margin-left: auto; font-size: 11px; font-family: var(--mono); color: var(--fg-dim); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .proj-name { font-family: var(--mono); font-weight: 600; font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .proj-meta { margin-left: auto; font-size: 11px; font-family: var(--mono); color: var(--fg-dim); white-space: nowrap; font-variant-numeric: tabular-nums; flex: none; }
   .proj-path { font-size: 11px; color: var(--fg-dim); font-family: var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 4px 0 10px 24px; }
   .proj-sessions { display: grid; gap: 6px; }
-  .sess { display: flex; align-items: center; gap: 8px; padding: 7px 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+  .sess { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto auto; align-items: center; gap: 8px; max-width: 100%; min-width: 0; overflow: hidden; padding: 7px 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
   .sdot { width: 8px; height: 8px; border-radius: 50%; background: var(--fg-dim); flex: none; }
   .sdot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 2s ease-in-out infinite; }
   .sdot.retro, .sdot.voting, .sdot.closing { background: var(--warn); }
@@ -180,10 +180,18 @@ export function renderDashboardPage(): string {
   .sess .scol { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
   .sess .stitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sess .sgoal { font-size: 11px; color: var(--fg-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sess .tag { max-width: 90px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .st { font-family: var(--mono); font-size: 11px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--fg-dim); flex: none; }
   .st.active { color: var(--accent); border-color: var(--accent); }
   .st.retro, .st.voting, .st.closing { color: var(--warn); border-color: var(--warn); }
   .st.closed { color: var(--fg-dim); }
+
+  @media (max-width: 720px) {
+    .sess { grid-template-columns: auto minmax(58px, auto) minmax(0, 1fr); }
+    .sess .tag, .sess .st { justify-self: start; }
+    .sess .tag { grid-column: 2 / 3; }
+    .sess .st { grid-column: 3 / 4; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  }
 
   /* key overlay */
 

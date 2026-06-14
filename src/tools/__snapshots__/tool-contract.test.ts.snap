@@ -709,6 +709,98 @@ exports[`tool contract snapshot > matches the registered tool schemas and contra
     "schema_version": "v3.1",
   },
   {
+    "contract_hash": "fnv1a32:a9f7a100",
+    "inputSchema": {
+      "properties": {
+        "action_items": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "consensus_summary": {
+          "type": "string",
+        },
+        "consensus_threshold": {
+          "default": 0.75,
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number",
+        },
+        "create_vote": {
+          "default": false,
+          "type": "boolean",
+        },
+        "initiated_by": {
+          "enum": [
+            "codex",
+            "claude",
+            "opencode",
+            "hermes",
+          ],
+          "type": "string",
+        },
+        "max_rounds": {
+          "default": 2,
+          "minimum": 1,
+          "type": "number",
+        },
+        "participants": {
+          "items": {
+            "enum": [
+              "codex",
+              "claude",
+              "opencode",
+              "hermes",
+            ],
+            "type": "string",
+          },
+          "minItems": 2,
+          "type": "array",
+        },
+        "question": {
+          "type": "string",
+        },
+        "session_id": {
+          "type": "string",
+        },
+        "strategy": {
+          "default": "consensus_first",
+          "enum": [
+            "consensus_first",
+            "vote_if_split",
+            "vote_only",
+          ],
+          "type": "string",
+        },
+        "task_id": {
+          "type": "string",
+        },
+        "thread_id": {
+          "type": "string",
+        },
+        "title": {
+          "type": "string",
+        },
+        "vote_options": {
+          "items": {
+            "type": "string",
+          },
+          "minItems": 2,
+          "type": "array",
+        },
+      },
+      "required": [
+        "participants",
+        "initiated_by",
+        "question",
+      ],
+      "type": "object",
+    },
+    "name": "run_deliberation",
+    "schema_version": "v3.1",
+  },
+  {
     "contract_hash": "fnv1a32:fd20d98f",
     "inputSchema": {
       "properties": {

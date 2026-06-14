@@ -8,7 +8,7 @@ Contract metadata:
 - `contract_hash`: deterministic FNV-1a hash of each tool name, description, input schema, annotations, and schema version.
 - Snapshot test: `src/tools/tool-contract.test.ts`
 
-Baseline result: active v3 defines 32 tools.
+Baseline result: active v3 defines 37 tools.
 
 | #   | Tool                   | Domain file     | schema_version | contract_hash      |
 | --- | ---------------------- | --------------- | -------------- | ------------------ |
@@ -33,17 +33,22 @@ Baseline result: active v3 defines 32 tools.
 | 19  | `get_discussion`       | `discussion.ts` | `v3.1`         | `fnv1a32:99d08b8e` |
 | 20  | `close_discussion`     | `discussion.ts` | `v3.1`         | `fnv1a32:ba088010` |
 | 21  | `check_consensus`      | `discussion.ts` | `v3.1`         | `fnv1a32:e2ad70e6` |
-| 22  | `create_vote`          | `vote.ts`       | `v3.1`         | `fnv1a32:cf3a5dd0` |
-| 23  | `cast_vote`            | `vote.ts`       | `v3.1`         | `fnv1a32:87822c9d` |
-| 24  | `get_vote_result`      | `vote.ts`       | `v3.1`         | `fnv1a32:bc9dca05` |
-| 25  | `log_handoff`          | `handoff.ts`    | `v3.1`         | `fnv1a32:0ef37aa1` |
-| 26  | `get_handoff`          | `handoff.ts`    | `v3.1`         | `fnv1a32:3441d0a9` |
-| 27  | `ack_handoff`          | `handoff.ts`    | `v3.1`         | `fnv1a32:71a2682d` |
-| 28  | `lock_task`            | `lock.ts`       | `v3.1`         | `fnv1a32:4ad2ab0c` |
-| 29  | `unlock_task`          | `lock.ts`       | `v3.1`         | `fnv1a32:6e27472c` |
-| 30  | `record_file_change`   | `file.ts`       | `v3.1`         | `fnv1a32:18d8c0b5` |
-| 31  | `broadcast_event`      | `event.ts`      | `v3.1`         | `fnv1a32:2616bf5e` |
-| 32  | `get_events`           | `event.ts`      | `v3.1`         | `fnv1a32:3f29f915` |
+| 22  | `run_deliberation`     | `deliberation.ts` | `v3.1`       | `fnv1a32:a9f7a100` |
+| 23  | `create_vote`          | `vote.ts`       | `v3.1`         | `fnv1a32:cf3a5dd0` |
+| 24  | `cast_vote`            | `vote.ts`       | `v3.1`         | `fnv1a32:87822c9d` |
+| 25  | `get_vote_result`      | `vote.ts`       | `v3.1`         | `fnv1a32:bc9dca05` |
+| 26  | `log_handoff`          | `handoff.ts`    | `v3.1`         | `fnv1a32:0ef37aa1` |
+| 27  | `get_handoff`          | `handoff.ts`    | `v3.1`         | `fnv1a32:3441d0a9` |
+| 28  | `ack_handoff`          | `handoff.ts`    | `v3.1`         | `fnv1a32:71a2682d` |
+| 29  | `lock_task`            | `lock.ts`       | `v3.1`         | `fnv1a32:4ad2ab0c` |
+| 30  | `unlock_task`          | `lock.ts`       | `v3.1`         | `fnv1a32:6e27472c` |
+| 31  | `record_file_change`   | `file.ts`       | `v3.1`         | `fnv1a32:18d8c0b5` |
+| 32  | `broadcast_event`      | `event.ts`      | `v3.1`         | `fnv1a32:2616bf5e` |
+| 33  | `get_events`           | `event.ts`      | `v3.1`         | `fnv1a32:3f29f915` |
+| 34  | `audit_tool_contracts` | `monitor.ts`    | `v3.1`         | `fnv1a32:916ea521` |
+| 35  | `get_d1_health`        | `monitor.ts`    | `v3.1`         | `fnv1a32:62ff9351` |
+| 36  | `heartbeat`            | `monitor.ts`    | `v3.1`         | `fnv1a32:b8e565a9` |
+| 37  | `reap_stale_agents`    | `monitor.ts`    | `v3.1`         | `fnv1a32:4b1a09be` |
 
 Verification commands:
 

@@ -77,7 +77,7 @@ describe('worker entrypoint', () => {
       zero_flags: { blocked_escalation: boolean; handoff_pending: boolean };
     };
     expect(payload.server).toBe('mcp-dev-hub');
-    expect(payload.tool_count).toBe(36);
+    expect(payload.tool_count).toBe(37);
     expect(payload.zero_flags.blocked_escalation).toBe(false);
   });
 
@@ -116,7 +116,7 @@ describe('worker entrypoint', () => {
 
     const listed = await worker.fetch(post({ jsonrpc: '2.0', id: 2, method: 'tools/list' }), env);
     const payload = (await listed.json()) as { result: { tools: unknown[] } };
-    expect(payload.result.tools).toHaveLength(36);
+    expect(payload.result.tools).toHaveLength(37);
   });
 
   it('rejects requests with invalid UTF-8 bytes before JSON parsing', async () => {

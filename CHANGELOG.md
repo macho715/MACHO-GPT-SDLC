@@ -8,6 +8,7 @@
 
 ### Added
 
+- **`run_deliberation` MCP 도구**: 기존 `discussion`/`vote` 스키마를 재사용해 다중 에이전트 토론을 단일 호출로 열고, 응답 대기·합의 종료·투표 생성 경로를 판정하는 오케스트레이터 추가 (`src/tools/deliberation.ts`)
 - **상태 대시보드** (`GET /dashboard`): AI 상태·세션 라이프사이클·태스크·토론/투표·핸드오프·이벤트 피드를 5초 polling으로 표시하는 자체 완결 HTML 셸 (`src/dashboard/page.ts`, `data.ts`)
 - **프로젝트별 세션 패널**: `start_session`에 `project`(로컬 폴더 경로) 인자 추가 + `session.project` 컬럼·`idx_session_project` 인덱스. 폴더 기준으로 세션을 그룹화해 표시 (`src/dashboard/projects.ts`, `buildProjectSessions`)
 - **Collapsible 카드 패널**: 각 패널 헤더(button) 클릭/Enter/Space로 본문 접기·펴기. `grid-template-rows 1fr↔0fr` 트랜지션, chevron 회전, `aria-expanded`/`aria-controls` 접근성, 접힘 상태 `localStorage` 영속화 (commit `926bf33`)

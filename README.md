@@ -11,7 +11,7 @@ Current verified runtime:
 - Worker entrypoint: `src/index.ts`
 - D1 schema source: `src/db/schema.sql`
 - Tool registry: `src/tools/index.ts`
-- Tool count: `32`
+- Tool count: `37`
 - Tool contract version: `v3.1`
 - Package manager: `npm`
 
@@ -20,7 +20,7 @@ Current verified runtime:
 - Session lifecycle: active -> retro -> voting -> next active session.
 - Task coordination: D1 task records plus TTL task locks.
 - Agent start guard: `validate_agent_start` returns `PASS`, `ZERO-T1`, `ZERO-T2`, or `ZERO-T3`.
-- Discussion, consensus, and vote tracking.
+- Discussion, consensus, vote tracking, and single-call deliberation orchestration.
 - Retrospective review and leader election.
 - Handoff, event, and file-change logging.
 - Public read-only dashboard shell plus dashboard, status, and per-project session snapshot APIs (writes stay key-gated). Updated 2026-06-13.
